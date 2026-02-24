@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Penerimaan Bantuan</title>
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .pg-page { background: var(--gray-100); min-height: 100vh; }
+  .pg-topbar { background: var(--green); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .pg-brand { display: flex; align-items: center; gap: 10px; }
+  .pg-brand .brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pg-brand .brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; }
+  .pg-brand .brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+  .topbar-back { display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 600; transition: background 0.15s; }
+  .topbar-back:hover { background: rgba(255,255,255,0.2); }
+
+  .pg-body { max-width: 640px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--gray-400); margin-bottom: 24px; }
+
+  /* HERO CARD — pencairan cair */
+  .hero-card { background: var(--green); border-radius: 18px; padding: 28px 24px; margin-bottom: 20px; text-align: center; color: white; }
+  .hero-card .hero-icon { font-size: 56px; margin-bottom: 14px; }
+  .hero-card .hero-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .hero-card .hero-sub { font-size: 15px; opacity: 0.85; line-height: 1.5; margin-bottom: 20px; }
+  .hero-card .hero-amount { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px 20px; display: inline-block; }
+  .hero-card .hero-amount-label { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+  .hero-card .hero-amount-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; }
+
+  /* DETAIL CARD */
+  .detail-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 22px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .detail-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-100); }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 11px 0; border-bottom: 1px solid var(--gray-100); }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { font-size: 14px; color: var(--gray-400); font-weight: 500; flex-shrink: 0; }
+  .detail-val { font-size: 14px; font-weight: 600; color: var(--gray-800); text-align: right; }
+  .detail-val.green { color: var(--green); }
+
+  /* TIMELINE PIPELINE */
+  .timeline-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 22px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .timeline-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-100); }
+  .tl { display: flex; flex-direction: column; }
+  .tl-step { display: flex; gap: 14px; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 34px; flex-shrink: 0; }
+  .tl-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+  .tl-dot.done { background: var(--green-light); color: var(--green); }
+  .tl-dot.current { background: var(--accent-soft); color: #a16207; border: 2px solid var(--accent); }
+  .tl-line { width: 2px; flex: 1; min-height: 20px; margin: 2px 0; }
+  .tl-line.done { background: var(--green-light); }
+  .tl-right { padding-bottom: 20px; flex: 1; }
+  .tl-step:last-child .tl-right { padding-bottom: 0; }
+  .tl-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; padding-top: 5px; }
+  .tl-desc { font-size: 13px; color: var(--gray-400); line-height: 1.5; }
+  .chip { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+  .chip-done { background: var(--green-light); color: var(--green); }
+  .chip-current { background: var(--accent-soft); color: #a16207; }
+
+  /* LAPORAN SECTION */
+  .laporan-note { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; font-size: 14px; color: #2d5fa8; line-height: 1.6; }
+  .laporan-note strong { display: block; font-size: 15px; margin-bottom: 4px; }
+
+  /* ACTIONS */
+  .btn-primary { width: 100%; background: var(--green); color: white; border: none; border-radius: 12px; padding: 15px 28px; font-size: 16px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; margin-bottom: 12px; display: block; box-sizing: border-box; text-align: center; text-decoration: none; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { width: 100%; background: white; color: var(--gray-600); border: 2px solid var(--gray-200); border-radius: 12px; padding: 13px 24px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
+  .btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
+
+  /* BELUM CAIR STATE */
+  .menunggu-card { background: white; border-radius: 16px; border: 2px dashed var(--accent); padding: 32px 24px; text-align: center; margin-bottom: 20px; }
+  .menunggu-card .mc-icon { font-size: 52px; margin-bottom: 14px; }
+  .menunggu-card .mc-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: var(--gray-800); margin-bottom: 8px; }
+  .menunggu-card .mc-desc { font-size: 14px; color: var(--gray-400); line-height: 1.6; }
+  .menunggu-card .mc-ref { background: var(--accent-soft); border: 1px solid #f0c050; border-radius: 10px; padding: 10px 16px; font-size: 13px; color: #a16207; margin: 14px 0; display: inline-block; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="pg-page">
+
+  <div class="pg-topbar">
+    <div class="pg-brand">
+      <div class="brand-icon">🕌</div>
+      <div>
+        <div class="brand-text">SINARA</div>
+        <span class="brand-sub">Portal Pengurus Rumah Ibadah</span>
+      </div>
+    </div>
+    <a class="topbar-back" href="dashboard-pengurus.html">← Kembali</a>
+  </div>
+
+  <div class="pg-body">
+
+    <div class="page-title">Penerimaan Bantuan</div>
+    <p class="page-subtitle">Informasi pencairan dana bantuan untuk rumah ibadah Anda.</p>
+
+    <!-- ============================================================
+         STATE A: Dana sudah dicairkan (tampilkan ini)
+         STATE B: Masih dalam proses (lihat di bawah)
+         ============================================================ -->
+
+    <!-- STATE A: DANA CAIR -->
+    <div id="state-cair">
+
+      <div class="hero-card">
+        <div class="hero-icon">🎊</div>
+        <div class="hero-title">Dana Bantuan Telah Dicairkan!</div>
+        <div class="hero-sub">Selamat! Dana bantuan untuk Masjid Al-Ikhlas telah berhasil dicairkan dan siap digunakan.</div>
+        <div class="hero-amount">
+          <div class="hero-amount-label">Jumlah Dana Diterima</div>
+          <div class="hero-amount-value">Rp 75.000.000</div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">Informasi Pencairan</div>
+        <div class="detail-row">
+          <span class="detail-label">Nomor Pengajuan</span>
+          <span class="detail-val">SINARA/2025/BNT/4821</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Jenis Bantuan</span>
+          <span class="detail-val">Renovasi</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Tanggal Pencairan</span>
+          <span class="detail-val">12 Februari 2025</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Metode Transfer</span>
+          <span class="detail-val">Transfer Bank</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Rekening Tujuan</span>
+          <span class="detail-val">BRI · 1234-01-012345-56-7</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="detail-val green">✓ Dana Diterima</span>
+        </div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="timeline-card-title">Riwayat Proses Pengajuan</div>
+        <div class="tl">
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Pengajuan Dikirim <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">10 Jan 2025 — Pengajuan bantuan berhasil dikirim ke Pemkot Depok.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Verifikasi Dokumen <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">15 Jan 2025 — Dokumen pendukung telah diverifikasi oleh Pemkot Depok.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Survei Lapangan <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">22 Jan 2025 — Survei lapangan oleh petugas Pemkot Depok telah dilaksanakan.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Persetujuan Anggaran <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">5 Feb 2025 — Anggaran bantuan sebesar Rp 75.000.000 telah disetujui.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Pencairan Dana <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">12 Feb 2025 — Dana sebesar Rp 75.000.000 telah dicairkan ke rekening pengurus.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="laporan-note">
+        <strong>📋 Kewajiban Laporan Penggunaan Dana</strong>
+        Setelah pekerjaan selesai, Anda wajib menyerahkan <b>laporan penggunaan dana</b> kepada Pemkot Depok. Laporan berisi foto progres pekerjaan dan bukti pengeluaran. Hubungi petugas Pemkot Depok untuk informasi lebih lanjut.
+      </div>
+
+      <a href="dashboard-pengurus.html" class="btn-primary">Kembali ke Beranda</a>
+
+    </div>
+    <!-- END STATE A -->
+
+
+    <!-- ============================================================
+         STATE B: Masih dalam proses (sembunyikan dengan style="display:none")
+         Tampilkan ini jika dana belum dicairkan
+         ============================================================ -->
+    <div id="state-proses" style="display:none;">
+
+      <div class="menunggu-card">
+        <div class="mc-icon">⏳</div>
+        <div class="mc-title">Dana Sedang Diproses</div>
+        <div class="mc-desc">Pengajuan Anda sedang dalam tahap <strong>Persetujuan Anggaran</strong>. Dana akan dicairkan setelah semua tahap selesai.</div>
+        <div class="mc-ref">Nomor Pengajuan: SINARA/2025/BNT/4821</div>
+        <div class="mc-desc">Anda akan dihubungi oleh petugas Pemkot Depok jika ada perkembangan lebih lanjut.</div>
+      </div>
+
+      <div class="timeline-card">
+        <div class="timeline-card-title">Status Proses Pengajuan</div>
+        <div class="tl">
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Pengajuan Dikirim <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">10 Jan 2025 — Pengajuan berhasil dikirim.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Verifikasi Dokumen <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">15 Jan 2025 — Dokumen telah diverifikasi.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot done">✓</div>
+              <div class="tl-line done"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Survei Lapangan <span class="chip chip-done">Selesai</span></div>
+              <div class="tl-desc">22 Jan 2025 — Survei lapangan selesai.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot current">4</div>
+              <div class="tl-line done" style="background: repeating-linear-gradient(to bottom, var(--gray-200) 0px, var(--gray-200) 5px, transparent 5px, transparent 10px);"></div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label">Persetujuan Anggaran <span class="chip chip-current">Sedang Berjalan</span></div>
+              <div class="tl-desc">Anggaran sedang dikaji oleh tim Pemkot Depok. Estimasi selesai 5–10 hari kerja.</div>
+            </div>
+          </div>
+
+          <div class="tl-step">
+            <div class="tl-left">
+              <div class="tl-dot" style="background:var(--gray-100); color:var(--gray-400); border: 2px solid var(--gray-200);">5</div>
+            </div>
+            <div class="tl-right">
+              <div class="tl-label" style="color:var(--gray-400);">Pencairan Dana</div>
+              <div class="tl-desc">Menunggu persetujuan anggaran selesai.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <a href="dashboard-pengurus.html" class="btn-secondary">← Kembali ke Beranda</a>
+
+    </div>
+    <!-- END STATE B -->
+
+  </div>
+</div>
+</div>
+
+<script>
+// Toggle state untuk demo — ganti nilai ini
+// true = dana sudah cair | false = masih dalam proses
+const danaSudahCair = true;
+
+document.getElementById('state-cair').style.display = danaSudahCair ? 'block' : 'none';
+document.getElementById('state-proses').style.display = danaSudahCair ? 'none' : 'block';
+</script>
+</body>
+</html>

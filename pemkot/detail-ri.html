@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Detail Rumah Ibadah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/global.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-600); }
+
+/* ===== PAGE SWITCHER ===== */
+.page-switcher { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #0f1923; padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 6px; overflow-x: auto; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-switcher > span { font-size: 10px; color: #98a2b3; font-weight: 700; margin-right: 8px; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+.page-switcher a { text-decoration: none; flex-shrink: 0; }
+.tab-btn { padding: 5px 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+.tab-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+.tab-btn.active { background: var(--green); color: white; border-color: var(--green); }
+.ps-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); flex-shrink: 0; margin: 0 4px; }
+
+/* ===== LAYOUT ===== */
+.pemda-layout { display: flex; min-height: 100vh; padding-top: 44px; }
+.sidebar { width: 220px; background: var(--gray-800); color: white; display: flex; flex-direction: column; position: fixed; top: 44px; left: 0; bottom: 0; z-index: 100; }
+.sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo .logo-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+.sidebar-logo .logo-sub { font-size: 10px; opacity: 0.45; margin-top: 3px; }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: var(--green); color: white; font-weight: 700; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 700; color: white; }
+.sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+/* ===== USER ACTION MENU ===== */
+.sidebar-user-wrap { position: relative; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; }
+.btn-user-menu {
+  margin-left: auto; flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: transparent; border: none;
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.btn-user-menu:hover { background: rgba(255,255,255,0.1); }
+.btn-user-menu svg { display: block; }
+.user-dropdown {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: #263244; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+.user-dropdown.open { display: block; }
+a.user-dropdown-item { text-decoration: none; }
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.75); cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.user-dropdown-item:last-child { border-bottom: none; }
+.user-dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.user-dropdown-item.danger { color: #f87171; }
+.user-dropdown-item.danger:hover { background: rgba(248,113,113,0.1); }
+.user-dropdown-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+
+.main-content { margin-left: 220px; flex: 1; background: var(--gray-100); padding: 28px; min-height: calc(100vh - 44px); }
+
+/* ===== PAGE HEADER ===== */
+.breadcrumb { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+.breadcrumb a { color: var(--gray-400); text-decoration: none; }
+.breadcrumb a:hover { color: var(--green); }
+.breadcrumb span { color: var(--gray-600); }
+
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.page-header-left h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 5px; }
+.page-header-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page-header-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+/* ===== BADGE ===== */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-yellow { background: var(--accent-soft); color: #a16207; }
+.badge-red { background: var(--red-soft); color: var(--red); }
+.badge-blue { background: var(--blue-soft); color: var(--blue); }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.dot-green { background: var(--green); }
+.dot-yellow { background: var(--accent); }
+.dot-red { background: var(--red); }
+
+/* ===== CONTENT GRID ===== */
+.content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+
+/* ===== SECTION CARD ===== */
+.section-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 16px; }
+.section-card:last-child { margin-bottom: 0; }
+.section-header { padding: 14px 20px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.section-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--gray-800); text-transform: uppercase; letter-spacing: 0.5px; }
+.section-body { padding: 20px; }
+
+/* ===== DATA ROWS ===== */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.data-row { padding: 11px 0; border-bottom: 1px solid var(--gray-100); }
+.data-row:last-child { border-bottom: none; }
+.data-row.full { grid-column: span 2; }
+.data-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.data-val { font-size: 14px; font-weight: 500; color: var(--gray-800); line-height: 1.5; }
+.data-val.muted { color: var(--gray-400); font-style: italic; font-weight: 400; }
+.data-val a { color: var(--blue); text-decoration: none; word-break: break-all; }
+.data-val a:hover { text-decoration: underline; }
+
+/* ===== FOTO GRID ===== */
+.foto-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+.foto-item { width: 110px; height: 90px; border-radius: 8px; border: 1px solid var(--gray-200); background: var(--gray-100); overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.foto-item img { width: 100%; height: 100%; object-fit: cover; }
+.foto-item.placeholder { font-size: 11px; font-weight: 600; color: var(--gray-400); text-align: center; padding: 8px; line-height: 1.4; }
+
+/* ===== PENGURUS TABLE ===== */
+.pengurus-table { width: 100%; border-collapse: collapse; }
+.pengurus-table th { padding: 9px 12px; text-align: left; font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.4px; font-family: 'Plus Jakarta Sans', sans-serif; border-bottom: 1px solid var(--gray-100); background: var(--gray-50); }
+.pengurus-table td { padding: 11px 12px; font-size: 13px; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+.pengurus-table tr:last-child td { border-bottom: none; }
+.pengurus-table .td-name-main { font-weight: 600; color: var(--gray-800); }
+
+/* ===== SIDEBAR KANAN ===== */
+.side-section { background: white; border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 16px; }
+.side-section:last-child { margin-bottom: 0; }
+.side-header { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); }
+.side-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-800); text-transform: uppercase; letter-spacing: 0.5px; }
+.side-body { padding: 16px; }
+.side-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+.side-row:last-child { border-bottom: none; }
+.side-label { color: var(--gray-400); font-size: 12px; flex-shrink: 0; }
+.side-val { font-weight: 600; color: var(--gray-800); text-align: right; font-size: 13px; }
+
+/* ===== RIWAYAT ===== */
+.riwayat-list { display: flex; flex-direction: column; gap: 0; }
+.riwayat-item { display: flex; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--gray-100); }
+.riwayat-item:last-child { border-bottom: none; }
+.riwayat-dot-wrap { display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0; padding-top: 3px; }
+.riwayat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.riwayat-dot.green { background: var(--green); }
+.riwayat-dot.yellow { background: var(--accent); }
+.riwayat-dot.red { background: var(--red); }
+.riwayat-dot.gray { background: var(--gray-300); }
+.riwayat-right { flex: 1; }
+.riwayat-event { font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 2px; }
+.riwayat-desc { font-size: 12px; color: var(--gray-400); line-height: 1.4; }
+.riwayat-date { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+
+/* ===== BUTTONS ===== */
+.btn-primary { display: inline-flex; align-items: center; gap: 6px; background: var(--green); color: white; border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; text-decoration: none; }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-secondary { display: inline-flex; align-items: center; gap: 6px; background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; text-decoration: none; }
+.btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
+.btn-verify { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-soft); color: #a16207; border: 1.5px solid #f0c050; border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; text-decoration: none; }
+.btn-verify:hover { background: #f0c050; }
+
+/* ===== MODAL ===== */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 14px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.18); overflow: hidden; }
+.modal-header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+.modal-header.green { background: var(--green); }
+.modal-header.red { background: var(--red); }
+.modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 800; color: white; }
+.modal-close { width: 28px; height: 28px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: rgba(255,255,255,0.3); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; justify-content: flex-end; }
+.form-row { margin-bottom: 16px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.form-input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); outline: none; transition: all 0.15s; box-sizing: border-box; background: white; }
+.form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+textarea.form-input { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+/* ===== TOAST ===== */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--gray-800); color: white; padding: 13px 20px; border-radius: 10px; font-size: 14px; font-weight: 500; box-shadow: 0 6px 20px rgba(0,0,0,0.18); z-index: 999; display: none; max-width: 320px; line-height: 1.4; }
+.toast.show { display: block; animation: fadeInUp 0.2s ease; }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== STATUS BANNER ===== */
+.status-banner { border-radius: 10px; padding: 13px 18px; margin-bottom: 20px; font-size: 13px; line-height: 1.5; border: 1px solid; }
+.status-banner.pending { background: var(--accent-soft); border-color: #f0c050; color: #a16207; }
+.status-banner.pending strong { font-size: 14px; display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>Wireframe</span>
+</div>
+
+<div class="pemda-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-brand">SINARA</div>
+      <div class="logo-sub">Kota Depok · 2025</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="dashboard.html">Dashboard</a>
+      <a class="nav-item active" href="data-ri.html">Data Rumah Ibadah</a>
+      <a class="nav-item" href="verifikasi.html">Verifikasi <span class="nav-badge">7</span></a>
+      <a class="nav-item" href="anggaran.html">Anggaran</a>
+      <a class="nav-item" href="laporan.html">Laporan</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user-wrap">
+        <div class="user-dropdown" id="userDropdown">
+          <a class="user-dropdown-item" href="profil.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 13c0-2.5 2.7-4 6-4s6 1.5 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Profil Saya
+          </a>
+          <a class="user-dropdown-item" href="ganti-password.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Ganti Password
+          </a>
+          <div class="user-dropdown-item danger" onclick="logout()">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Keluar
+          </div>
+        </div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">BD</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sidebar-user-name">Budi Darma</div>
+            <div class="sidebar-user-role">Admin Pemkot</div>
+          </div>
+          <button class="btn-user-menu" id="btnUserMenu" onclick="toggleUserMenu(event)" title="Menu akun">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="3" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="8" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="13" r="1.2" fill="rgba(255,255,255,0.6)"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+
+    <div class="breadcrumb">
+      <a href="data-ri.html">Data Rumah Ibadah</a>
+      <span> / Masjid Al-Ikhlas</span>
+    </div>
+
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1>Masjid Al-Ikhlas</h1>
+        <div class="page-header-meta">
+          <span class="badge badge-green">Masjid</span>
+          <span><span class="dot dot-yellow"></span>Menunggu Verifikasi</span>
+          <span style="font-size:12px; color:var(--gray-400);">ID: RI-2025-00412</span>
+        </div>
+      </div>
+      <div class="page-header-actions">
+        <a href="data-ri.html" class="btn-secondary">Kembali</a>
+        <button class="btn-verify" onclick="openModal('modal-verify')">Verifikasi</button>
+      </div>
+    </div>
+
+    <!-- Banner menunggu verifikasi (tampil jika status pending) -->
+    <div class="status-banner pending">
+      <strong>Menunggu Verifikasi</strong>
+      Data rumah ibadah ini telah dikirim oleh pengurus dan menunggu tindakan verifikasi dari petugas Pemkot Depok.
+    </div>
+
+    <div class="content-grid">
+
+      <!-- KOLOM KIRI -->
+      <div>
+
+        <!-- Identitas -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">Identitas Rumah Ibadah</div>
+          </div>
+          <div class="section-body">
+            <div class="data-grid">
+              <div class="data-row full">
+                <div class="data-label">Nama Rumah Ibadah</div>
+                <div class="data-val">Masjid Al-Ikhlas</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Jenis</div>
+                <div class="data-val">Masjid</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Tahun Berdiri</div>
+                <div class="data-val">1987</div>
+              </div>
+              <div class="data-row full">
+                <div class="data-label">Kondisi Bangunan</div>
+                <div class="data-val"><span class="badge badge-yellow">Perlu Renovasi</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lokasi -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">Lokasi</div>
+          </div>
+          <div class="section-body">
+            <div class="data-grid">
+              <div class="data-row full">
+                <div class="data-label">Alamat Jalan</div>
+                <div class="data-val">Jl. Margonda Raya No. 54</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Kecamatan</div>
+                <div class="data-val">Pancoran Mas</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Kelurahan</div>
+                <div class="data-val">Babakan Pasar</div>
+              </div>
+              <div class="data-row full">
+                <div class="data-label">Link Google Maps</div>
+                <div class="data-val">
+                  <a href="#" target="_blank">https://maps.google.com/?q=Masjid+Al-Ikhlas+Depok</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ketua Pengurus -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">Ketua Pengurus</div>
+          </div>
+          <div class="section-body">
+            <div class="data-grid">
+              <div class="data-row">
+                <div class="data-label">Nama</div>
+                <div class="data-val">H. Ahmad Fauzi</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">No. Telepon / WA</div>
+                <div class="data-val">081234567890</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Email Akun</div>
+                <div class="data-val">ahmad@email.com</div>
+              </div>
+              <div class="data-row">
+                <div class="data-label">Tanggal Daftar</div>
+                <div class="data-val">3 Januari 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daftar Pengurus -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">Daftar Pengurus</div>
+            <span style="font-size:12px; color:var(--gray-400);">3 orang</span>
+          </div>
+          <div class="section-body" style="padding:0;">
+            <table class="pengurus-table">
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Jabatan</th>
+                  <th>Kontak</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="td-name-main">H. Ahmad Fauzi</div></td>
+                  <td><span class="badge badge-green">Ketua</span></td>
+                  <td style="font-size:12px;">081234567890</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name-main">Siti Rahayu</div></td>
+                  <td><span class="badge badge-blue">Sekretaris</span></td>
+                  <td style="font-size:12px;">082345678901</td>
+                </tr>
+                <tr>
+                  <td><div class="td-name-main">Budi Santoso</div></td>
+                  <td><span class="badge badge-yellow">Bendahara</span></td>
+                  <td style="font-size:12px;">083456789012</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Foto Bangunan -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-title">Foto Bangunan</div>
+            <span style="font-size:12px; color:var(--gray-400);">3 foto</span>
+          </div>
+          <div class="section-body">
+            <div class="foto-grid">
+              <div class="foto-item placeholder">Foto 1<br><span style="font-size:10px;">(mock)</span></div>
+              <div class="foto-item placeholder">Foto 2<br><span style="font-size:10px;">(mock)</span></div>
+              <div class="foto-item placeholder">Foto 3<br><span style="font-size:10px;">(mock)</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- KOLOM KANAN -->
+      <div>
+
+        <!-- Ringkasan Status -->
+        <div class="side-section">
+          <div class="side-header">
+            <div class="side-title">Ringkasan</div>
+          </div>
+          <div class="side-body">
+            <div class="side-row">
+              <span class="side-label">Status Registrasi</span>
+              <span class="side-val"><span class="dot dot-yellow"></span>Menunggu Verifikasi</span>
+            </div>
+            <div class="side-row">
+              <span class="side-label">Tanggal Pengiriman</span>
+              <span class="side-val">10 Jan 2025</span>
+            </div>
+            <div class="side-row">
+              <span class="side-label">Terakhir Diperbarui</span>
+              <span class="side-val">10 Jan 2025</span>
+            </div>
+            <div class="side-row">
+              <span class="side-label">No. Registrasi</span>
+              <span class="side-val">RI-2025-00412</span>
+            </div>
+          </div>
+          <div style="padding: 0 16px 16px; display:flex; flex-direction:column; gap:8px;">
+            <button class="btn-primary" style="width:100%; justify-content:center;" onclick="openModal('modal-approve')">Setujui Pendaftaran</button>
+            <button class="btn-secondary" style="width:100%; justify-content:center; border-color:var(--red); color:var(--red);" onclick="openModal('modal-tolak')">Tolak Pendaftaran</button>
+          </div>
+        </div>
+
+        <!-- Riwayat -->
+        <div class="side-section">
+          <div class="side-header">
+            <div class="side-title">Riwayat Aktivitas</div>
+          </div>
+          <div class="side-body" style="padding: 8px 16px;">
+            <div class="riwayat-list">
+              <div class="riwayat-item">
+                <div class="riwayat-dot-wrap"><div class="riwayat-dot yellow"></div></div>
+                <div class="riwayat-right">
+                  <div class="riwayat-event">Data dikirim, menunggu verifikasi</div>
+                  <div class="riwayat-date">10 Jan 2025, 09:14</div>
+                </div>
+              </div>
+              <div class="riwayat-item">
+                <div class="riwayat-dot-wrap"><div class="riwayat-dot gray"></div></div>
+                <div class="riwayat-right">
+                  <div class="riwayat-event">Akun pengurus dibuat</div>
+                  <div class="riwayat-date">3 Jan 2025, 14:22</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Pengajuan Bantuan -->
+        <div class="side-section">
+          <div class="side-header">
+            <div class="side-title">Pengajuan Bantuan</div>
+          </div>
+          <div class="side-body">
+            <div class="side-row">
+              <span class="side-label">Status</span>
+              <span class="side-val" style="color:var(--gray-400);">Belum Ada</span>
+            </div>
+            <div class="side-row">
+              <span class="side-label">Total Diterima</span>
+              <span class="side-val" style="color:var(--gray-400);">—</span>
+            </div>
+            <div style="padding-top:10px;">
+              <a href="verifikasi.html" class="btn-secondary" style="width:100%; justify-content:center; box-sizing:border-box; font-size:12px;">Lihat di Halaman Verifikasi</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SETUJUI -->
+<div class="modal-overlay" id="modal-approve" onclick="closeModalOutside(event, 'modal-approve')">
+  <div class="modal">
+    <div class="modal-header green">
+      <div class="modal-title">Setujui Pendaftaran</div>
+      <button class="modal-close" onclick="closeModal('modal-approve')">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-label">Rumah Ibadah</div>
+        <div style="font-size:14px; font-weight:600; color:var(--gray-800);">Masjid Al-Ikhlas</div>
+        <div style="font-size:12px; color:var(--gray-400); margin-top:2px;">Jl. Margonda Raya No. 54 · Pancoran Mas</div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Catatan Verifikasi <span style="font-weight:400; color:var(--gray-400);">(opsional)</span></label>
+        <textarea class="form-input" placeholder="Tambahkan catatan jika diperlukan..."></textarea>
+      </div>
+      <div style="background:var(--green-light); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--green); line-height:1.5;">
+        Dengan menyetujui, status rumah ibadah ini akan berubah menjadi <strong>Terdaftar</strong> dan pengurus dapat mengajukan bantuan.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-approve')">Batal</button>
+      <button class="btn-primary" onclick="doApprove()">Ya, Setujui</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TOLAK -->
+<div class="modal-overlay" id="modal-tolak" onclick="closeModalOutside(event, 'modal-tolak')">
+  <div class="modal">
+    <div class="modal-header red">
+      <div class="modal-title">Tolak Pendaftaran</div>
+      <button class="modal-close" onclick="closeModal('modal-tolak')">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">Alasan Penolakan</label>
+        <textarea class="form-input" id="input-alasan-tolak" placeholder="Jelaskan alasan penolakan agar pengurus dapat memperbaiki data..."></textarea>
+      </div>
+      <div style="background:var(--red-soft); border-radius:8px; padding:12px 14px; font-size:13px; color:var(--red); line-height:1.5;">
+        Dengan menolak, status rumah ibadah ini akan berubah menjadi <strong>Tidak Terdaftar</strong> dan alasan akan dikirimkan ke pengurus.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-tolak')">Batal</button>
+      <button style="background:var(--red); color:white; border:none; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif;" onclick="doTolak()">Ya, Tolak</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VERIFIKASI (shortcut) -->
+<div class="modal-overlay" id="modal-verify" onclick="closeModalOutside(event, 'modal-verify')">
+  <div class="modal">
+    <div class="modal-header green">
+      <div class="modal-title">Verifikasi Pendaftaran</div>
+      <button class="modal-close" onclick="closeModal('modal-verify')">x</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px; color:var(--gray-600); line-height:1.6; margin-bottom:16px;">Pilih tindakan verifikasi untuk <strong>Masjid Al-Ikhlas</strong>:</p>
+      <div style="display:flex; flex-direction:column; gap:10px;">
+        <button class="btn-primary" style="justify-content:center;" onclick="closeModal('modal-verify'); openModal('modal-approve')">Setujui Pendaftaran</button>
+        <button style="background:var(--red-soft); color:var(--red); border:1.5px solid #f5b8b8; border-radius:8px; padding:9px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:'Plus Jakarta Sans',sans-serif;" onclick="closeModal('modal-verify'); openModal('modal-tolak')">Tolak Pendaftaran</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-verify')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function closeModalOutside(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function doApprove() {
+  closeModal('modal-approve');
+  showToast('Pendaftaran Masjid Al-Ikhlas telah disetujui.', 'success');
+}
+
+function doTolak() {
+  const alasan = document.getElementById('input-alasan-tolak').value.trim();
+  if (!alasan) { alert('Alasan penolakan wajib diisi.'); return; }
+  closeModal('modal-tolak');
+  showToast('Pendaftaran Masjid Al-Ikhlas telah ditolak.', 'error');
+}
+
+// ===== USER MENU =====
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+function logout() {
+  document.getElementById('userDropdown').classList.remove('open');
+  window.location.href = 'login.html';
+}
+document.addEventListener('click', function() {
+  document.getElementById('userDropdown').classList.remove('open');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Pengajuan Bantuan</title>
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .pg-page { background: var(--gray-100); min-height: 100vh; }
+  .pg-topbar { background: var(--green); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .pg-brand { display: flex; align-items: center; gap: 10px; }
+  .pg-brand .brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pg-brand .brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; }
+  .pg-brand .brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+  .topbar-back { display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 600; transition: background 0.15s; }
+  .topbar-back:hover { background: rgba(255,255,255,0.2); }
+  .pg-body { max-width: 680px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--gray-400); margin-bottom: 20px; }
+
+  /* RI Info */
+  .ri-info-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 16px 20px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .ri-info-card .ric-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: var(--gray-800); }
+  .ri-info-card .ric-sub { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+
+  /* INFO NOTES */
+  .info-note { border-radius: 12px; padding: 14px 18px; margin-bottom: 14px; font-size: 14px; line-height: 1.6; }
+  .info-note.warning { background: var(--accent-soft); border: 1px solid #f0c050; color: #a16207; }
+  .info-note.danger { background: var(--red-soft); border: 1px solid #f5b8b8; color: #b94040; }
+  .info-note strong { display: block; font-size: 15px; margin-bottom: 3px; }
+
+  /* FORM CARD */
+  .form-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 24px; margin-bottom: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .form-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 18px; border-bottom: 1px solid var(--gray-100); padding-bottom: 12px; }
+
+  /* FORM FIELDS */
+  .form-row { margin-bottom: 18px; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-label { display: block; font-size: 15px; font-weight: 600; color: var(--gray-800); margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .form-label .lbl-opt { font-size: 12px; color: var(--gray-400); font-weight: 400; margin-left: 4px; }
+  .form-input { width: 100%; padding: 13px 16px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); background: white; transition: all 0.15s; outline: none; box-sizing: border-box; }
+  .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  .form-input::placeholder { color: var(--gray-400); }
+  select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%2398a2b3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+  textarea.form-input { resize: vertical; min-height: 120px; line-height: 1.5; }
+  .form-hint { font-size: 13px; color: var(--gray-400); margin-top: 6px; line-height: 1.5; }
+
+  /* ESTIMASI BIAYA */
+  .cost-wrap { position: relative; }
+  .cost-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; font-weight: 600; color: var(--gray-600); }
+  .cost-wrap .form-input { padding-left: 38px; }
+
+  /* FILE UPLOAD — disederhanakan */
+  .upload-area { border: 2px dashed var(--gray-200); border-radius: 12px; padding: 22px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--gray-50); margin-bottom: 10px; }
+  .upload-area:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .upload-area .ua-icon { font-size: 30px; margin-bottom: 8px; }
+  .upload-area .ua-text { font-size: 15px; font-weight: 600; color: var(--gray-700); font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 4px; }
+  .upload-area .ua-hint { font-size: 13px; color: var(--gray-400); }
+  .upload-area input[type="file"] { display: none; }
+  .file-list { display: flex; flex-direction: column; gap: 8px; }
+  .file-item { display: flex; align-items: center; gap: 10px; background: white; border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 11px 14px; }
+  .file-item .fi-icon { font-size: 20px; flex-shrink: 0; }
+  .file-item .fi-name { font-size: 14px; font-weight: 600; color: var(--gray-800); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-item .fi-size { font-size: 12px; color: var(--gray-400); flex-shrink: 0; }
+  .file-item .fi-remove { background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 17px; padding: 0 4px; flex-shrink: 0; }
+  .file-item .fi-remove:hover { color: var(--red); }
+
+  /* DOKUMEN GUIDE */
+  .doc-guide { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: var(--gray-600); line-height: 1.7; }
+  .doc-guide strong { display: block; font-size: 13px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px; }
+  .doc-guide ul { margin: 0; padding-left: 18px; }
+
+  /* FOTO */
+  .foto-previews { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .foto-preview-item { width: 90px; height: 90px; border-radius: 10px; border: 1.5px solid var(--gray-200); background: var(--gray-100); overflow: hidden; position: relative; flex-shrink: 0; }
+  .foto-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .foto-preview-remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* CHECKLIST */
+  .checklist { display: flex; flex-direction: column; gap: 10px; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 12px; background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 13px 16px; cursor: pointer; transition: all 0.15s; }
+  .checklist-item.checked { background: var(--green-light); border-color: #a5d6bc; }
+  .checklist-item .ci-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--gray-300); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; background: white; margin-top: 1px; }
+  .checklist-item.checked .ci-check { background: var(--green); border-color: var(--green); color: white; }
+  .checklist-item .ci-text { font-size: 14px; color: var(--gray-700); line-height: 1.5; }
+  .checklist-item.checked .ci-text { color: var(--green); }
+
+  /* ACTIONS */
+  .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray-100); }
+  .btn-primary { background: var(--green); color: white; border: none; border-radius: 10px; padding: 13px 28px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 13px 24px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; text-decoration: none; display: inline-flex; align-items: center; }
+  .btn-secondary:hover { border-color: var(--gray-400); }
+
+  /* SUCCESS */
+  .success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+  .success-overlay.show { display: flex; }
+  .success-modal { background: white; border-radius: 20px; padding: 40px 32px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 10px; }
+  .success-desc { font-size: 15px; color: var(--gray-400); line-height: 1.6; margin-bottom: 20px; }
+  .nomor-pengajuan { background: var(--gray-100); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--gray-600); margin-bottom: 24px; }
+  .nomor-pengajuan strong { display: block; font-size: 18px; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--gray-800); margin-top: 4px; letter-spacing: 1px; }
+
+  /* SUDAH PERNAH AJUKAN */
+  .sudah-ajukan-banner { background: var(--red-soft); border: 1px solid #f5b8b8; border-radius: 14px; padding: 28px 24px; text-align: center; margin-bottom: 16px; }
+  .sab-icon { font-size: 48px; margin-bottom: 14px; }
+  .sab-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: #b94040; margin-bottom: 8px; }
+  .sab-desc { font-size: 14px; color: #b94040; line-height: 1.6; }
+  .sab-ref { background: white; border-radius: 8px; padding: 10px 16px; margin: 14px 0; font-size: 14px; color: var(--gray-600); }
+  .sab-ref strong { display: block; font-size: 16px; font-weight: 800; color: var(--gray-800); margin-top: 2px; }
+
+  @media (max-width: 540px) {
+    .form-actions { flex-direction: column-reverse; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="pg-page">
+
+  <div class="pg-topbar">
+    <div class="pg-brand">
+      <div class="brand-icon">🕌</div>
+      <div>
+        <div class="brand-text">SINARA</div>
+        <span class="brand-sub">Portal Pengurus Rumah Ibadah</span>
+      </div>
+    </div>
+    <a class="topbar-back" href="dashboard-pengurus.html">← Kembali</a>
+  </div>
+
+  <div class="pg-body">
+
+    <div class="page-title">Pengajuan Bantuan</div>
+    <p class="page-subtitle">Ajukan permohonan bantuan pembangunan atau renovasi rumah ibadah kepada Pemkot Depok.</p>
+
+    <!-- RI Info -->
+    <div class="ri-info-card">
+      <div class="ric-name">Masjid Al-Ikhlas</div>
+      <div class="ric-sub">Jl. Margonda Raya No. 54 · Pancoran Mas · Kondisi: Perlu Renovasi</div>
+    </div>
+
+    <!-- CONTOH: sudah pernah ajukan tahun ini (ubah id="form-section" display:none; dan id="sudah-ajukan" display:block untuk demo) -->
+    <div id="sudah-ajukan" style="display:none;">
+      <div class="sudah-ajukan-banner">
+        <div class="sab-icon">🚫</div>
+        <div class="sab-title">Sudah Ada Pengajuan Tahun Ini</div>
+        <div class="sab-desc">Anda hanya dapat mengajukan bantuan <strong>satu kali dalam setahun</strong>. Pengajuan untuk tahun 2025 sudah tercatat.</div>
+        <div class="sab-ref">Nomor Pengajuan Anda:<strong>SINARA/2025/BNT/4821</strong></div>
+        <div class="sab-desc">Pantau status pengajuan Anda melalui beranda. Pengajuan berikutnya dapat dilakukan mulai <strong>1 Januari 2026</strong>.</div>
+      </div>
+      <div style="text-align:center;">
+        <a href="dashboard-pengurus.html" class="btn-secondary" style="display:inline-flex;">← Kembali ke Beranda</a>
+      </div>
+    </div>
+
+    <!-- FORM SECTION (sembunyikan jika sudah pernah ajukan tahun ini) -->
+    <div id="form-section">
+
+      <div class="info-note warning">
+        <strong>⚠️ Perhatikan sebelum mengajukan:</strong>
+        Pastikan data rumah ibadah sudah <b>Terdaftar</b>. Pengajuan hanya dapat dilakukan <b>satu kali dalam satu tahun</b>.
+      </div>
+
+      <!-- CARD 1: Detail Pengajuan -->
+      <div class="form-card">
+        <div class="form-card-title">Detail Pengajuan</div>
+
+        <div class="form-row">
+          <label class="form-label">Jenis Bantuan yang Diajukan</label>
+          <select class="form-input">
+            <option value="">-- Pilih Jenis Bantuan --</option>
+            <option value="renovasi">Renovasi</option>
+            <option value="pembangunan">Pembangunan</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Rencana Tanggal Mulai Pekerjaan</label>
+          <input type="date" class="form-input" id="tanggal-mulai">
+          <div class="form-hint">Perkiraan kapan pekerjaan bisa dimulai jika bantuan disetujui</div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Estimasi Biaya <span class="lbl-opt">(opsional)</span></label>
+          <div class="cost-wrap">
+            <span class="cost-prefix">Rp</span>
+            <input type="number" class="form-input" placeholder="Contoh: 50000000" min="0">
+          </div>
+          <div class="form-hint">Isi jika sudah ada perkiraan biaya dari kontraktor atau konsultan</div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Alasan dan Deskripsi Kebutuhan</label>
+          <textarea class="form-input" placeholder="Jelaskan kondisi bangunan saat ini, kerusakan yang terjadi, dan apa yang perlu diperbaiki atau dibangun. Minimal 50 karakter."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Bank Penerima <span style="color:var(--red); font-weight:700;">*</span></label>
+          <select class="form-input">
+            <option value="">-- Pilih Bank --</option>
+            <option value="bri">Bank BRI</option>
+            <option value="bni">Bank BNI</option>
+            <option value="mandiri">Bank Mandiri</option>
+            <option value="bca">Bank BCA</option>
+            <option value="btn">Bank BTN</option>
+            <option value="bjb">Bank BJB</option>
+            <option value="bsi">Bank Syariah Indonesia (BSI)</option>
+            <option value="muamalat">Bank Muamalat</option>
+            <option value="cimb">Bank CIMB Niaga</option>
+            <option value="danamon">Bank Danamon</option>
+            <option value="lainnya">Bank Lainnya</option>
+          </select>
+          <div class="form-hint">Pilih bank tempat dana bantuan akan ditransfer jika disetujui</div>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">Nomor Rekening <span style="color:var(--red); font-weight:700;">*</span></label>
+          <input type="text" class="form-input" id="nomor-rekening" placeholder="Contoh: 1234567890" inputmode="numeric" maxlength="20">
+          <div class="form-hint">Nomor rekening atas nama pengurus atau rekening operasional rumah ibadah</div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Dokumen Pendukung — disederhanakan -->
+      <div class="form-card">
+        <div class="form-card-title">Dokumen Pendukung</div>
+
+        <div class="doc-guide">
+          <strong>📄 Dokumen yang perlu disiapkan:</strong>
+          <ul>
+            <li>Proposal permohonan (wajib ditandatangani ketua & diketahui RT/RW)</li>
+            <li>Dokumen tambahan opsional: RAB, sertifikat tanah, IMB, dll.</li>
+          </ul>
+        </div>
+
+        <div class="form-row" style="margin-bottom:0;">
+          <label class="form-label">Unggah Dokumen <span style="color:var(--red); font-weight:700;">*</span></label>
+          <div class="upload-area" onclick="document.getElementById('file-dokumen').click()">
+            <div class="ua-icon">📁</div>
+            <div class="ua-text">Klik untuk unggah dokumen</div>
+            <div class="ua-hint">PDF atau DOC · Maks. 5 MB per file · Maks. 5 file</div>
+            <input type="file" id="file-dokumen" accept=".pdf,.doc,.docx" multiple onchange="handleFileUpload(event)">
+          </div>
+          <div class="file-list" id="file-list-dokumen"></div>
+          <div class="form-hint">Proposal permohonan wajib disertakan sebagai file pertama.</div>
+        </div>
+      </div>
+
+      <!-- CARD 3: Foto Kondisi -->
+      <div class="form-card">
+        <div class="form-card-title">Foto Kondisi Bangunan</div>
+        <p style="font-size:14px; color:var(--gray-400); margin-bottom:16px; line-height:1.5;">Unggah foto yang menunjukkan kondisi kerusakan atau area yang akan dibangun. Semakin jelas, semakin mudah diverifikasi.</p>
+
+        <div class="upload-area" onclick="document.getElementById('foto-kondisi').click()">
+          <div class="ua-icon">📷</div>
+          <div class="ua-text">Klik untuk unggah foto</div>
+          <div class="ua-hint">Hingga 5 foto · JPG atau PNG · Maks. 5 MB per foto</div>
+          <input type="file" id="foto-kondisi" accept="image/*" multiple onchange="handleFotoUpload(event)">
+        </div>
+        <div class="foto-previews" id="foto-previews"></div>
+      </div>
+
+      <!-- CARD 4: Pernyataan -->
+      <div class="form-card">
+        <div class="form-card-title">Pernyataan dan Persetujuan</div>
+        <p style="font-size:14px; color:var(--gray-400); margin-bottom:16px;">Baca dan centang semua pernyataan di bawah ini sebelum mengirim.</p>
+        <div class="checklist">
+          <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="ci-check"></div>
+            <div class="ci-text">Data yang saya isi adalah benar dan dapat dipertanggungjawabkan. Saya bersedia diverifikasi lapangan oleh petugas Pemkot Depok.</div>
+          </div>
+          <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="ci-check"></div>
+            <div class="ci-text">Saya memahami bahwa pengajuan ini tidak menjamin persetujuan bantuan. Keputusan sepenuhnya ada pada Pemkot Depok.</div>
+          </div>
+          <div class="checklist-item" onclick="toggleCheck(this)">
+            <div class="ci-check"></div>
+            <div class="ci-text">Jika bantuan disetujui, saya bersedia menggunakan dana sesuai peruntukan dan memberikan laporan kepada Pemkot Depok.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a class="btn-secondary" href="dashboard-pengurus.html">Batal</a>
+        <button class="btn-primary" onclick="submitPengajuan()">Kirim Pengajuan ✓</button>
+      </div>
+
+    </div><!-- end #form-section -->
+
+  </div>
+</div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-modal">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Pengajuan Terkirim!</div>
+    <div class="success-desc">Pengajuan bantuan Anda sudah kami terima. Tim Pemkot Depok akan menghubungi Anda untuk proses verifikasi dan survei lapangan.</div>
+    <div class="nomor-pengajuan">Nomor Pengajuan Anda:<strong id="nomor-ref"></strong></div>
+    <div style="font-size:13px; color:var(--gray-400); margin-bottom:24px;">Simpan nomor ini untuk memantau status pengajuan Anda.</div>
+    <button class="btn-primary" style="width:100%;" onclick="window.location.href='dashboard-pengurus.html'">Lihat Status di Beranda</button>
+  </div>
+</div>
+
+<script>
+// Simulasi: cek apakah sudah ada pengajuan tahun ini
+// Di production: ganti logika ini dengan data dari backend
+const sudahAjukanTahunIni = false; // Ganti ke 'true' untuk demo state sudah pernah mengajukan
+
+if (sudahAjukanTahunIni) {
+  document.getElementById('sudah-ajukan').style.display = 'block';
+  document.getElementById('form-section').style.display = 'none';
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  el.querySelector('.ci-check').textContent = el.classList.contains('checked') ? '✓' : '';
+}
+
+let fileStore = [];
+
+function handleFileUpload(event) {
+  const files = Array.from(event.target.files);
+  const list = document.getElementById('file-list-dokumen');
+  files.forEach(file => {
+    if (fileStore.length >= 5) return;
+    if (file.size > 5 * 1024 * 1024) { alert('Ukuran file maksimal 5 MB.'); return; }
+    const id = Date.now() + Math.random();
+    fileStore.push({ id, name: file.name, size: file.size });
+    const ext = file.name.split('.').pop().toUpperCase();
+    const sizeStr = file.size > 1024*1024 ? (file.size/1024/1024).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `<div class="fi-icon">${ext === 'PDF' ? '📄' : '📝'}</div><div class="fi-name">${file.name}</div><div class="fi-size">${sizeStr}</div><button class="fi-remove" onclick="removeFile(${id}, this)">✕</button>`;
+    list.appendChild(item);
+  });
+  event.target.value = '';
+}
+
+function removeFile(id, btn) {
+  fileStore = fileStore.filter(f => f.id !== id);
+  btn.closest('.file-item').remove();
+}
+
+function handleFotoUpload(event) {
+  const files = Array.from(event.target.files);
+  const previews = document.getElementById('foto-previews');
+  const existing = previews.querySelectorAll('.foto-preview-item').length;
+  const allowed = Math.min(files.length, 5 - existing);
+  for (let i = 0; i < allowed; i++) {
+    const file = files[i];
+    if (file.size > 5 * 1024 * 1024) { alert('Ukuran foto maksimal 5 MB.'); continue; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const item = document.createElement('div');
+      item.className = 'foto-preview-item';
+      item.innerHTML = `<img src="${e.target.result}" alt="Foto"><button class="foto-preview-remove" onclick="this.parentElement.remove()">✕</button>`;
+      previews.appendChild(item);
+    };
+    reader.readAsDataURL(file);
+  }
+  event.target.value = '';
+}
+
+// Set default date tanggal mulai
+const today = new Date();
+const defaultDate = new Date(today);
+defaultDate.setMonth(defaultDate.getMonth() + 1);
+const tanggalInput = document.getElementById('tanggal-mulai');
+if (tanggalInput) {
+  tanggalInput.min = today.toISOString().split('T')[0];
+  tanggalInput.value = defaultDate.toISOString().split('T')[0];
+}
+
+function submitPengajuan() {
+  const checks = document.querySelectorAll('.checklist-item');
+  if (!Array.from(checks).every(c => c.classList.contains('checked'))) {
+    alert('Harap centang semua pernyataan sebelum mengirim pengajuan.'); return;
+  }
+  const tahun = new Date().getFullYear();
+  document.getElementById('nomor-ref').textContent = 'SINARA/' + tahun + '/BNT/' + String(Math.floor(Math.random()*9000)+1000);
+  document.getElementById('success-overlay').classList.add('show');
+}
+</script>
+</body>
+</html>

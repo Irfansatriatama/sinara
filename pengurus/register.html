@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Daftar Akun Pengurus</title>
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .auth-page {
+    min-height: 100vh;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 24px 60px;
+  }
+  .auth-container { width: 100%; max-width: 420px; }
+  .auth-brand { text-align: center; margin-bottom: 28px; }
+  .auth-brand .logo-box {
+    width: 64px; height: 64px;
+    background: var(--green);
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(26,107,74,0.22);
+  }
+  .auth-brand h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .auth-brand p { font-size: 14px; color: var(--gray-400); }
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 28px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    margin-bottom: 16px;
+  }
+  .card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+  .card-subtitle { font-size: 13px; color: var(--gray-400); margin-bottom: 24px; line-height: 1.5; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 7px; }
+  .form-group label .req { color: var(--red); }
+  .form-control {
+    width: 100%; padding: 13px 15px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px; font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray-800); background: var(--gray-50);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .form-control:focus { outline: none; border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  .form-control::placeholder { color: var(--gray-400); }
+  .form-hint { font-size: 12px; color: var(--gray-400); margin-top: 5px; line-height: 1.4; }
+  .password-strength { margin-top: 8px; display: flex; gap: 4px; align-items: center; }
+  .strength-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--gray-200); transition: background 0.3s; }
+  .strength-bar.weak { background: var(--red); }
+  .strength-bar.medium { background: var(--accent); }
+  .strength-bar.strong { background: var(--green); }
+  .strength-label { font-size: 12px; color: var(--gray-400); min-width: 52px; text-align: right; }
+  .phone-wrap { display: flex; gap: 0; }
+  .phone-prefix {
+    padding: 13px 14px; background: var(--gray-100);
+    border: 1.5px solid var(--gray-200); border-right: none;
+    border-radius: 10px 0 0 10px;
+    font-size: 14px; color: var(--gray-600); font-weight: 500;
+    white-space: nowrap;
+  }
+  .phone-wrap .form-control { border-radius: 0 10px 10px 0; }
+  .btn-auth {
+    width: 100%; padding: 14px;
+    background: var(--green); color: white;
+    border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; transition: background 0.15s; margin-top: 6px;
+  }
+  .btn-auth:hover { background: var(--green-mid); }
+  .btn-auth.loading { background: var(--gray-400); cursor: not-allowed; }
+  .login-area { text-align: center; font-size: 14px; color: var(--gray-400); }
+  .login-area a { color: var(--green); font-weight: 600; text-decoration: none; }
+  .login-area a:hover { text-decoration: underline; }
+  .info-box {
+    background: var(--blue-soft); border: 1px solid #c3d9ff;
+    border-radius: 10px; padding: 13px 15px;
+    font-size: 13px; color: #2d5fa8; line-height: 1.6; margin-bottom: 22px;
+  }
+  @media (max-width: 480px) {
+    .auth-card { padding: 24px 18px; }
+    .auth-brand .logo-box { width: 54px; height: 54px; font-size: 24px; }
+    .auth-brand h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+  </div>
+
+<div style="padding-top:48px;">
+<div class="auth-page">
+  <div class="auth-container">
+
+    <div class="auth-brand">
+      <div class="logo-box">🕌</div>
+      <h1>SINARA</h1>
+      <p>Sistem Informasi Manajemen Bantuan &amp; Aset Rumah Ibadah</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="card-title">Buat Akun Baru</div>
+      <div class="card-subtitle">Isi data di bawah ini untuk mendaftarkan akun pengurus rumah ibadah Anda.</div>
+
+      <div class="info-box">
+        Setelah mendaftar, Anda bisa langsung mengisi data rumah ibadah dan mengajukan bantuan.
+      </div>
+
+      <div class="form-group">
+        <label>Email <span class="req">*</span></label>
+        <input class="form-control" type="email" placeholder="contoh@email.com" id="email-input">
+        <div class="form-hint">Digunakan untuk masuk ke SINARA dan menerima notifikasi dari Pemkot Depok.</div>
+      </div>
+
+      <div class="form-group">
+        <label>No. WhatsApp / Telepon <span class="req">*</span></label>
+        <div class="phone-wrap">
+          <div class="phone-prefix">+62</div>
+          <input class="form-control" type="tel" placeholder="8xx-xxxx-xxxx" id="phone-input">
+        </div>
+        <div class="form-hint">Untuk keperluan komunikasi dari petugas Pemkot Depok.</div>
+      </div>
+
+      <div class="form-group">
+        <label>Password <span class="req">*</span></label>
+        <input class="form-control" type="password" placeholder="Minimal 8 karakter" id="pwd-input" oninput="checkStrength(this.value)">
+        <div class="form-hint" style="margin-top:6px;">Gunakan minimal 8 karakter. Tambahkan angka agar lebih aman.</div>
+      </div>
+
+      <button class="btn-auth" id="btn-daftar" onclick="daftar()">Daftar Sekarang</button>
+    </div>
+
+    <div class="login-area">
+      Sudah punya akun? <a href="login.html">Masuk di sini</a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+function checkStrength(val) {
+  const b1 = document.getElementById('bar1');
+  const b2 = document.getElementById('bar2');
+  const b3 = document.getElementById('bar3');
+  const lbl = document.getElementById('strength-label');
+  [b1,b2,b3].forEach(b => b.className = 'strength-bar');
+  if (val.length === 0) { lbl.textContent = ''; return; }
+  if (val.length < 6) {
+    b1.classList.add('weak');
+    lbl.textContent = 'Lemah'; lbl.style.color = 'var(--red)';
+  } else if (val.length < 10 || !/[A-Z]/.test(val) || !/[0-9]/.test(val)) {
+    b1.classList.add('medium'); b2.classList.add('medium');
+    lbl.textContent = 'Sedang'; lbl.style.color = 'var(--accent)';
+  } else {
+    b1.classList.add('strong'); b2.classList.add('strong'); b3.classList.add('strong');
+    lbl.textContent = 'Kuat'; lbl.style.color = 'var(--green)';
+  }
+}
+function daftar() {
+  const btn = document.getElementById('btn-daftar');
+  btn.textContent = 'Memproses...';
+  btn.classList.add('loading');
+  btn.onclick = null;
+  setTimeout(() => { window.location.href = 'dashboard-pengurus.html'; }, 1200);
+}
+</script>
+</body>
+</html>

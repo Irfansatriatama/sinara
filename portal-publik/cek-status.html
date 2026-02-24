@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Cek Status Pengajuan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap">
+<style>
+:root {
+  --green: #1a6b4a; --green-mid: #2d8f63; --green-light: #e8f5ef;
+  --accent: #f0a500; --accent-soft: #fff8e6;
+  --red: #e05252; --red-soft: #fdf0f0;
+  --blue: #3a7bd5; --blue-soft: #eef4ff;
+  --gray-50: #f9fafb; --gray-100: #f2f4f7; --gray-200: #e4e7ec;
+  --gray-400: #98a2b3; --gray-600: #475467; --gray-800: #1d2939;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+.topbar { background: var(--blue); color: white; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: white; }
+.brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.15s; }
+.back-btn:hover { color: white; }
+
+/* PAGE ENTRY */
+.page-entry { background: white; border-bottom: 1px solid var(--gray-200); padding: 40px 24px 36px; text-align: center; }
+.page-entry-inner { max-width: 600px; margin: 0 auto; }
+.page-entry-icon { width: 72px; height: 72px; background: var(--blue-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.page-entry h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--gray-800); margin-bottom: 10px; }
+.page-entry p { font-size: 15px; color: var(--gray-400); line-height: 1.6; margin-bottom: 28px; }
+.search-entry { display: flex; gap: 10px; max-width: 460px; margin: 0 auto 20px; }
+.search-entry input { flex: 1; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); transition: border-color 0.15s; }
+.search-entry input:focus { outline: none; border-color: var(--blue); }
+.search-entry input::placeholder { color: var(--gray-400); }
+.btn-cari { padding: 14px 24px; background: var(--blue); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+.btn-cari:hover { background: #2d6bc0; }
+.dummy-row { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.dummy-chip { background: var(--blue-soft); color: var(--blue); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; border: 1px solid transparent; }
+.dummy-chip:hover { background: var(--blue); color: white; }
+.dummy-label { font-size: 12px; color: var(--gray-400); text-align: center; margin-bottom: 6px; }
+.err-msg { color: var(--red); font-size: 13px; margin-top: 8px; display: none; }
+
+/* RESULT AREA */
+.result-wrap { max-width: 680px; margin: 0 auto; padding: 28px 20px 80px; display: none; }
+
+/* SEARCH BAR (compact — in results) */
+.search-compact { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 10px; }
+.search-compact input { flex: 1; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); }
+.search-compact input:focus { outline: none; border-color: var(--blue); }
+.search-compact .btn-cari { padding: 10px 18px; font-size: 14px; border-radius: 8px; }
+
+/* RESULT CARDS */
+.menunggu-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 28px 24px; text-align: center; margin-bottom: 16px; }
+.mc-icon { font-size: 40px; margin-bottom: 12px; }
+.mc-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: var(--gray-800); margin-bottom: 6px; }
+.mc-nomor { background: var(--blue-soft); color: var(--blue); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; padding: 8px 16px; border-radius: 8px; display: inline-block; margin: 10px 0; letter-spacing: 0.5px; }
+.mc-desc { font-size: 13px; color: var(--gray-400); line-height: 1.6; }
+
+.hero-cair { background: linear-gradient(135deg, var(--green), #0f4a33); border-radius: 14px; padding: 32px 24px; text-align: center; color: white; margin-bottom: 16px; }
+.hc-icon { font-size: 44px; margin-bottom: 12px; }
+.hc-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+.hc-sub { font-size: 13px; opacity: 0.85; margin-bottom: 20px; line-height: 1.5; }
+.hc-amount-box { background: rgba(255,255,255,0.15); border-radius: 12px; padding: 16px 24px; display: inline-block; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); }
+.hc-amount-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.hc-amount-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 800; }
+
+.detail-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 20px 24px; margin-bottom: 16px; }
+.detail-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--gray-100); }
+.detail-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid var(--gray-50); font-size: 13px; gap: 16px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--gray-400); flex-shrink: 0; }
+.detail-val { color: var(--gray-800); font-weight: 500; text-align: right; }
+.detail-val.green { color: var(--green); font-weight: 700; }
+
+/* TIMELINE */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-step { display: flex; gap: 14px; }
+.tl-left { display: flex; flex-direction: column; align-items: center; }
+.tl-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+.tl-dot.done { background: var(--green); color: white; }
+.tl-dot.current { background: var(--blue-soft); color: var(--blue); border: 2px solid var(--blue); }
+.tl-dot.pending { background: var(--gray-100); color: var(--gray-400); border: 2px solid var(--gray-200); }
+.tl-line { width: 2px; flex: 1; min-height: 20px; margin: 4px 0; }
+.tl-line.done { background: var(--green); }
+.tl-line.dashed { background: repeating-linear-gradient(to bottom, var(--gray-200) 0px, var(--gray-200) 4px, transparent 4px, transparent 8px); }
+.tl-right { flex: 1; padding-bottom: 20px; }
+.tl-label { font-size: 13px; font-weight: 700; color: var(--gray-800); margin-bottom: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tl-label.muted { color: var(--gray-400); }
+.tl-desc { font-size: 12px; color: var(--gray-400); line-height: 1.5; }
+.chip { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; }
+.chip-done { background: var(--green-light); color: var(--green); }
+.chip-current { background: var(--blue-soft); color: var(--blue); }
+.chip-pending { background: var(--gray-100); color: var(--gray-400); }
+
+.note-blue { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 14px 16px; font-size: 13px; color: #2d5fa8; line-height: 1.6; }
+.note-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="index.html">
+    <div class="brand-icon">🏢</div>
+    <div>
+      <div class="brand-text">SINARA</div>
+      <span class="brand-sub">Sistem Informasi Manajemen Bantuan & Aset Rumah Ibadah</span>
+    </div>
+  </a>
+  <a class="back-btn" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 13L5 8l5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kembali
+  </a>
+</div>
+
+<!-- PAGE ENTRY -->
+<div class="page-entry" id="pageEntry">
+  <div class="page-entry-inner">
+    <div class="page-entry-icon">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <circle cx="18" cy="18" r="14" stroke="#3a7bd5" stroke-width="2"/>
+        <path d="M12 18l4 4 8-8" stroke="#3a7bd5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M18 8v3M28 18h-3M18 28v-3M8 18h3" stroke="#3a7bd5" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>Cek Status Pengajuan</h1>
+    <p>Masukkan nomor pengajuan untuk melihat perkembangan terkini permohonan bantuan Anda.</p>
+    <div class="search-entry">
+      <input type="text" id="inputNomor" placeholder="Contoh: SINARA/2025/BNT/4821" oninput="this.value = this.value.toUpperCase()">
+      <button class="btn-cari" onclick="cariPengajuan()">Cari</button>
+    </div>
+    <div class="err-msg" id="errMsg">Nomor pengajuan tidak ditemukan. Periksa kembali nomor Anda.</div>
+    <div class="dummy-label">Coba nomor contoh:</div>
+    <div class="dummy-row">
+      <span class="dummy-chip" onclick="isiNomor('SBH-2025-0001')">SBH-2025-0001</span>
+      <span class="dummy-chip" onclick="isiNomor('SBH-2025-0002')">SBH-2025-0002</span>
+      <span class="dummy-chip" onclick="isiNomor('SBH-2025-0003')">SBH-2025-0003</span>
+      <span class="dummy-chip" onclick="isiNomor('SBH-2025-0004')">SBH-2025-0004</span>
+      <span class="dummy-chip" onclick="isiNomor('SBH-2025-0005')">SBH-2025-0005</span>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT AREA -->
+<div class="result-wrap" id="resultWrap">
+  <!-- Search compact -->
+  <div class="search-compact">
+    <input type="text" id="inputNomorCompact" placeholder="Masukkan nomor pengajuan" oninput="this.value = this.value.toUpperCase()">
+    <button class="btn-cari" onclick="cariCompact()">Cari</button>
+  </div>
+  <div id="areaHasil"></div>
+</div>
+
+<script>
+// DATA
+const dataPengajuan = {
+  'SBH-2025-0001': { nomor:'SBH-2025-0001', namaRI:'Masjid Al-Hikmah', lokasi:'Kec. Sukmajaya', tanggalAjuan:'3 Januari 2025', tahapAktif:1, badge:'Pengajuan Dikirim', badgeWarna:'blue' },
+  'SBH-2025-0002': { nomor:'SBH-2025-0002', namaRI:'Gereja Bethel Depok', lokasi:'Kec. Pancoran Mas', tanggalAjuan:'10 Januari 2025', tahapAktif:2, badge:'Verifikasi Dokumen', badgeWarna:'yellow' },
+  'SBH-2025-0003': { nomor:'SBH-2025-0003', namaRI:'Pura Agung Sari', lokasi:'Kec. Beji', tanggalAjuan:'15 Januari 2025', tahapAktif:3, badge:'Survei Lapangan', badgeWarna:'yellow' },
+  'SBH-2025-0004': { nomor:'SBH-2025-0004', namaRI:'Mushola Baiturrahman', lokasi:'Kec. Cimanggis', tanggalAjuan:'5 Januari 2025', tahapAktif:4, badge:'Persetujuan Anggaran', badgeWarna:'yellow' },
+  'SBH-2025-0005': { nomor:'SBH-2025-0005', namaRI:'Masjid Al-Ikhlas', lokasi:'Kec. Cilodong', tanggalAjuan:'7 Januari 2025', tahapAktif:5, badge:'Dana Cair', badgeWarna:'green', jumlahDana:'Rp 75.000.000', tanggalCair:'12 Maret 2025', rekening:'BJB — **** 4521' }
+};
+const tahapInfo = [
+  { label:'Pengajuan Dikirim',    tgl:{'SBH-2025-0001':'3 Jan 2025','SBH-2025-0002':'10 Jan 2025','SBH-2025-0003':'15 Jan 2025','SBH-2025-0004':'5 Jan 2025','SBH-2025-0005':'7 Jan 2025'}, deskDone:'Pengajuan berhasil diterima oleh sistem.' },
+  { label:'Verifikasi Dokumen',   tgl:{'SBH-2025-0002':'15 Jan 2025','SBH-2025-0003':'20 Jan 2025','SBH-2025-0004':'10 Jan 2025','SBH-2025-0005':'12 Jan 2025'}, deskDone:'Dokumen pendukung dinyatakan lengkap dan valid.' },
+  { label:'Survei Lapangan',      tgl:{'SBH-2025-0003':'28 Jan 2025','SBH-2025-0004':'18 Jan 2025','SBH-2025-0005':'22 Jan 2025'}, deskDone:'Survei lapangan oleh petugas Pemkot Depok selesai.' },
+  { label:'Persetujuan Anggaran', tgl:{'SBH-2025-0004':'—','SBH-2025-0005':'10 Feb 2025'}, deskDone:'Anggaran bantuan telah disetujui.' },
+  { label:'Pencairan Dana',       tgl:{'SBH-2025-0005':'12 Mar 2025'}, deskDone:'Dana telah dicairkan ke rekening yang didaftarkan.' }
+];
+const deskAktif = ['','Pengajuan Anda sudah diterima. Petugas Pemkot Depok akan mulai memeriksa dokumen dalam waktu dekat.','Petugas sedang memeriksa kelengkapan dan keabsahan dokumen.','Petugas sedang melakukan kunjungan langsung ke lokasi rumah ibadah.','Tim Pemkot Depok sedang mengkaji besaran anggaran bantuan. Estimasi 5–10 hari kerja.',''];
+
+function isiNomor(nomor) {
+  document.getElementById('inputNomor').value = nomor;
+  cariPengajuan();
+}
+function cariPengajuan() {
+  const val = document.getElementById('inputNomor').value.trim().toUpperCase();
+  const errEl = document.getElementById('errMsg');
+  if (!val) { errEl.style.display = 'block'; errEl.textContent = 'Masukkan nomor pengajuan terlebih dahulu.'; return; }
+  const data = dataPengajuan[val];
+  if (!data) { errEl.style.display = 'block'; errEl.textContent = 'Nomor pengajuan tidak ditemukan. Periksa kembali nomor Anda.'; return; }
+  errEl.style.display = 'none';
+  document.getElementById('pageEntry').style.display = 'none';
+  const wrap = document.getElementById('resultWrap');
+  wrap.style.display = 'block';
+  document.getElementById('inputNomorCompact').value = val;
+  renderHasil(data);
+  window.scrollTo(0, 0);
+}
+function cariCompact() {
+  const val = document.getElementById('inputNomorCompact').value.trim().toUpperCase();
+  const data = dataPengajuan[val];
+  if (!data) { document.getElementById('areaHasil').innerHTML = '<div style="text-align:center;padding:20px;color:var(--red);font-size:14px;">Nomor pengajuan tidak ditemukan.</div>'; return; }
+  renderHasil(data);
+}
+
+function renderHasil(data) {
+  const area = document.getElementById('areaHasil');
+  const isCair = data.tahapAktif === 5;
+  let html = '';
+  if (isCair) {
+    html += `<div class="hero-cair"><div class="hc-icon">🎊</div><div class="hc-title">Dana Bantuan Telah Dicairkan!</div><div class="hc-sub">Selamat! Dana bantuan untuk ${data.namaRI} telah berhasil dicairkan.</div><div class="hc-amount-box"><div class="hc-amount-label">Jumlah Dana Diterima</div><div class="hc-amount-val">${data.jumlahDana}</div></div></div>
+    <div class="detail-card"><div class="detail-card-title">Informasi Pencairan</div>
+    <div class="detail-row"><span class="detail-label">Nomor Pengajuan</span><span class="detail-val">${data.nomor}</span></div>
+    <div class="detail-row"><span class="detail-label">Rumah Ibadah</span><span class="detail-val">${data.namaRI}</span></div>
+    <div class="detail-row"><span class="detail-label">Tanggal Diajukan</span><span class="detail-val">${data.tanggalAjuan}</span></div>
+    <div class="detail-row"><span class="detail-label">Tanggal Pencairan</span><span class="detail-val">${data.tanggalCair}</span></div>
+    <div class="detail-row"><span class="detail-label">Rekening Tujuan</span><span class="detail-val">${data.rekening}</span></div>
+    <div class="detail-row"><span class="detail-label">Status</span><span class="detail-val green">✓ Selesai — Dana Diterima</span></div>
+    </div>
+    <div class="detail-card"><div class="detail-card-title">Riwayat Proses</div>${renderTimeline(data, true)}</div>
+    <div class="note-blue"><span class="note-title">Kewajiban Laporan Penggunaan Dana</span>Setelah pekerjaan selesai, Anda wajib menyerahkan laporan penggunaan dana kepada Pemkot Depok. Laporan berisi foto progres pekerjaan dan bukti pengeluaran.</div>`;
+  } else {
+    html += `<div class="menunggu-card"><div class="mc-icon">⏳</div><div class="mc-title">Pengajuan Sedang Diproses</div><div class="mc-nomor">${data.nomor}</div><div class="mc-desc">Saat ini berada pada tahap <strong>${tahapInfo[data.tahapAktif-1].label}</strong>.<br>${deskAktif[data.tahapAktif]}</div></div>
+    <div class="detail-card"><div class="detail-card-title">Detail Pengajuan</div>
+    <div class="detail-row"><span class="detail-label">Nomor Pengajuan</span><span class="detail-val">${data.nomor}</span></div>
+    <div class="detail-row"><span class="detail-label">Rumah Ibadah</span><span class="detail-val">${data.namaRI}</span></div>
+    <div class="detail-row"><span class="detail-label">Lokasi</span><span class="detail-val">${data.lokasi}</span></div>
+    <div class="detail-row"><span class="detail-label">Tanggal Diajukan</span><span class="detail-val">${data.tanggalAjuan}</span></div>
+    <div class="detail-row"><span class="detail-label">Tahap Aktif</span><span class="detail-val" style="color:var(--accent)">Tahap ${data.tahapAktif} — ${tahapInfo[data.tahapAktif-1].label}</span></div>
+    </div>
+    <div class="detail-card"><div class="detail-card-title">Status Proses Pengajuan</div>${renderTimeline(data, false)}</div>`;
+  }
+  area.innerHTML = html;
+}
+
+function renderTimeline(data, semuaDone) {
+  let html = '<div class="timeline">';
+  for (let i = 0; i < 5; i++) {
+    const t = tahapInfo[i]; const no = i+1;
+    const isDone = semuaDone || no < data.tahapAktif;
+    const isCurrent = !semuaDone && no === data.tahapAktif;
+    const isPending = !semuaDone && no > data.tahapAktif;
+    const dotClass = isDone ? 'done' : isCurrent ? 'current' : 'pending';
+    const dotLabel = isDone ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3.5 3.5L13 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : no;
+    const lineClass = isDone ? 'done' : 'dashed';
+    const isLast = i === 4;
+    let chip = isDone ? '<span class="chip chip-done">Selesai</span>' : isCurrent ? '<span class="chip chip-current">Sedang Berjalan</span>' : '<span class="chip chip-pending">Menunggu</span>';
+    const tgl = t.tgl[data.nomor];
+    let desc = isDone ? (tgl?tgl+' — ':'')+t.deskDone : isCurrent ? deskAktif[no] : 'Menunggu tahap sebelumnya selesai.';
+    html += `<div class="tl-step"><div class="tl-left"><div class="tl-dot ${dotClass}">${dotLabel}</div>${!isLast?`<div class="tl-line ${lineClass}"></div>`:''}</div><div class="tl-right"><div class="tl-label ${isPending?'muted':''}">${t.label} ${chip}</div><div class="tl-desc">${desc}</div></div></div>`;
+  }
+  return html + '</div>';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('inputNomor').addEventListener('keydown', e => { if (e.key === 'Enter') cariPengajuan(); });
+  document.getElementById('inputNomorCompact').addEventListener('keydown', e => { if (e.key === 'Enter') cariCompact(); });
+});
+</script>
+</body>
+</html>

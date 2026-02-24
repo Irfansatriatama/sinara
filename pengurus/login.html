@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Masuk Akun Pengurus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .auth-page {
+    min-height: 100vh;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 24px 60px;
+  }
+  .auth-container { width: 100%; max-width: 420px; }
+  .auth-brand { text-align: center; margin-bottom: 28px; }
+  .auth-brand .logo-box {
+    width: 64px; height: 64px;
+    background: var(--green);
+    border-radius: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 16px rgba(26,107,74,0.22);
+  }
+  .auth-brand h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .auth-brand p { font-size: 14px; color: var(--gray-400); }
+  .auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 28px;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    margin-bottom: 16px;
+  }
+  .card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--gray-800); margin-bottom: 4px; }
+  .card-subtitle { font-size: 13px; color: var(--gray-400); margin-bottom: 24px; line-height: 1.5; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 7px; }
+  .form-control {
+    width: 100%; padding: 13px 15px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px; font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray-800); background: var(--gray-50);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    box-sizing: border-box;
+  }
+  .form-control:focus { outline: none; border-color: var(--green); background: white; box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  .form-control::placeholder { color: var(--gray-400); }
+  .forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -8px;
+    margin-bottom: 20px;
+  }
+  .forgot-link {
+    font-size: 13px; color: var(--green); font-weight: 600;
+    cursor: pointer; text-decoration: none;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+  .btn-auth {
+    width: 100%; padding: 14px;
+    background: var(--green); color: white;
+    border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer; transition: background 0.15s; margin-top: 6px;
+  }
+  .btn-auth:hover { background: var(--green-mid); }
+  .btn-auth.loading { background: var(--gray-400); cursor: not-allowed; }
+  .register-area { text-align: center; font-size: 14px; color: var(--gray-400); }
+  .register-area a { color: var(--green); font-weight: 600; text-decoration: none; }
+  .register-area a:hover { text-decoration: underline; }
+  .portal-switch {
+    text-align: center; margin-top: 8px;
+    font-size: 13px; color: var(--gray-400);
+  }
+  .portal-switch a { color: var(--gray-600); font-weight: 600; text-decoration: none; }
+  .portal-switch a:hover { color: var(--green); }
+
+  /* ===== LUPA PASSWORD PANEL ===== */
+  .forgot-panel { display: none; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 13px; color: var(--gray-400); cursor: pointer;
+    background: none; border: none; padding: 0; margin-bottom: 20px;
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+  }
+  .back-btn:hover { color: var(--green); }
+  .success-state {
+    display: none; text-align: center; padding: 12px 0 4px;
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    background: var(--green-light); border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 16px;
+  }
+  .success-state h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 17px; font-weight: 700; color: var(--gray-800); margin-bottom: 8px;
+  }
+  .success-state p {
+    font-size: 13px; color: var(--gray-400); line-height: 1.6; margin-bottom: 24px;
+  }
+  .help-text {
+    text-align: center; font-size: 12px; color: var(--gray-400);
+    margin-top: 16px; line-height: 1.5;
+  }
+  @media (max-width: 480px) {
+    .auth-card { padding: 24px 18px; }
+    .auth-brand .logo-box { width: 54px; height: 54px; font-size: 24px; }
+    .auth-brand h1 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>Wireframe</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="auth-page">
+  <div class="auth-container">
+
+    <div class="auth-brand">
+      <div class="logo-box">&#x1F54C;</div>
+      <h1>SINARA</h1>
+      <p>Sistem Informasi Manajemen Bantuan &amp; Aset Rumah Ibadah</p>
+    </div>
+
+    <!-- KARTU LOGIN -->
+    <div id="login-card" class="auth-card">
+      <div class="card-title">Masuk ke Akun Anda</div>
+      <div class="card-subtitle">Kelola data rumah ibadah dan pantau status pendaftaran serta bantuan.</div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input class="form-control" type="email" placeholder="contoh@email.com" id="email-input">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input class="form-control" type="password" placeholder="Masukkan password" id="pwd-input">
+      </div>
+
+      <div class="forgot-row">
+        <span class="forgot-link" onclick="showForgot()">Lupa password?</span>
+      </div>
+
+      <button class="btn-auth" id="btn-masuk" onclick="masuk()">Masuk</button>
+    </div>
+
+    <!-- KARTU LUPA PASSWORD -->
+    <div id="forgot-card" class="auth-card forgot-panel">
+      <button class="back-btn" onclick="showLogin()">&larr; Kembali ke login</button>
+
+      <div id="forgot-step1">
+        <div class="card-title">Lupa Password?</div>
+        <div class="card-subtitle">Masukkan email yang Anda pakai saat mendaftar. Kami akan kirimkan tautan untuk mengatur ulang password.</div>
+
+        <div class="form-group">
+          <label>Email terdaftar</label>
+          <input class="form-control" type="email" placeholder="contoh@email.com">
+        </div>
+
+        <button class="btn-auth" onclick="showForgotSuccess()">Kirim Tautan Reset</button>
+
+        <p class="help-text">
+          Lupa email yang digunakan? Hubungi kami di<br>
+          <strong style="color:var(--gray-600);">sinara@depok.go.id</strong>
+        </p>
+      </div>
+
+      <div id="forgot-success" class="success-state">
+        <div class="success-icon">&#x2709;&#xFE0F;</div>
+        <h3>Email Terkirim</h3>
+        <p>Tautan reset password sudah dikirim ke email Anda. Silakan cek kotak masuk atau folder spam, lalu ikuti instruksi di dalamnya.</p>
+        <button class="btn-auth" onclick="showLogin()">Kembali ke Login</button>
+      </div>
+    </div>
+
+    <div class="register-area">
+      Belum punya akun? <a href="register.html">Daftar di sini</a>
+    </div>
+
+    <div class="portal-switch" style="margin-top:12px;">
+      Petugas Pemda? <a href="../pemkot/login.html">Login di portal Pemkot &rarr;</a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+function masuk() {
+  const btn = document.getElementById('btn-masuk');
+  btn.textContent = 'Memproses...';
+  btn.classList.add('loading');
+  btn.onclick = null;
+  setTimeout(() => { window.location.href = 'dashboard-pengurus.html'; }, 1200);
+}
+function showForgot() {
+  document.getElementById('login-card').style.display = 'none';
+  document.getElementById('forgot-card').style.display = 'block';
+}
+function showLogin() {
+  document.getElementById('login-card').style.display = 'block';
+  document.getElementById('forgot-card').style.display = 'none';
+  document.getElementById('forgot-step1').style.display = 'block';
+  document.getElementById('forgot-success').style.display = 'none';
+}
+function showForgotSuccess() {
+  document.getElementById('forgot-step1').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'block';
+}
+</script>
+</body>
+</html>

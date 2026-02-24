@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Daftarkan Rumah Ibadah</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root {
+  --green: #1a6b4a; --green-mid: #2d8f63; --green-light: #e8f5ef;
+  --accent: #f0a500; --accent-soft: #fff8e6;
+  --red: #e05252; --red-soft: #fdf0f0;
+  --blue: #3a7bd5; --blue-soft: #eef4ff;
+  --gray-50: #f9fafb; --gray-100: #f2f4f7; --gray-200: #e4e7ec;
+  --gray-400: #98a2b3; --gray-600: #475467; --gray-800: #1d2939;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+.topbar { background: var(--green); color: white; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1001; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: white; }
+.brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.15s; }
+.back-btn:hover { color: white; }
+
+/* PAGE ENTRY */
+.page-entry { background: white; border-bottom: 1px solid var(--gray-200); padding: 40px 24px 36px; text-align: center; }
+.page-entry-inner { max-width: 600px; margin: 0 auto; }
+.page-entry-icon { width: 72px; height: 72px; background: var(--accent-soft); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.page-entry h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--gray-800); margin-bottom: 10px; }
+.page-entry p { font-size: 15px; color: var(--gray-400); line-height: 1.6; margin-bottom: 28px; }
+.btn-mulai { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--accent); color: white; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; border: none; cursor: pointer; transition: background 0.15s; }
+.btn-mulai:hover { background: #d4920a; }
+.entry-meta { display: flex; justify-content: center; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+.entry-meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-400); }
+
+/* FORM */
+.form-area { display: none; }
+.pg-body { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+.form-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 24px; margin-bottom: 16px; }
+.card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 10px; }
+.card-title-num { width: 26px; height: 26px; background: var(--accent-soft); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.form-group { margin-bottom: 18px; }
+.form-group:last-child { margin-bottom: 0; }
+label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 7px; }
+label .req { color: var(--red); margin-left: 2px; }
+.form-control { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); background: var(--gray-50); transition: border-color 0.15s; }
+.form-control:focus { outline: none; border-color: var(--accent); background: white; }
+.form-control::placeholder { color: var(--gray-400); }
+select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%2398a2b3' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+textarea.form-control { resize: vertical; min-height: 90px; }
+.form-hint { font-size: 12px; color: var(--gray-400); margin-top: 5px; line-height: 1.4; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.note-blue { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #2d5fa8; line-height: 1.6; }
+.note-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; display: block; }
+
+.btn-primary { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:hover { background: #d4920a; }
+
+/* PENDING STATE */
+.pending-state { display: none; }
+.pending-banner { background: white; border-radius: 16px; border: 1px solid var(--gray-200); padding: 40px 28px; text-align: center; margin-bottom: 20px; }
+.pending-banner h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin: 16px 0 10px; }
+.pending-banner p { font-size: 14px; color: var(--gray-400); line-height: 1.6; }
+.status-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-soft); color: #a16207; border: 1px solid #f0c050; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; margin: 16px 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+.btn-secondary { width: 100%; padding: 13px; background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; transition: all 0.15s; margin-top: 10px; }
+.btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
+
+@media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } .topbar { padding: 0 16px; } }
+
+/* Maps picker modal */
+.maps-close { background:none; border:none; cursor:pointer; padding:4px; color:var(--gray-400); font-size:20px; line-height:1; }
+.maps-map { width:100%; height:280px; border-radius:12px; border:2px solid var(--gray-200); overflow:hidden; margin-bottom:16px; position:relative; background:#e8f0fe; }
+.maps-map iframe { width:100%; height:100%; border:none; }
+.maps-map-placeholder { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; color:var(--gray-400); font-size:14px; }
+.maps-coords { background:var(--gray-50); border:1px solid var(--gray-200); border-radius:8px; padding:10px 14px; font-size:13px; color:var(--gray-600); margin-bottom:14px; min-height:38px; display:flex; align-items:center; gap:8px; }
+.btn-loc { display:flex; align-items:center; gap:8px; width:100%; padding:13px; background:var(--accent); color:white; border:none; border-radius:10px; font-size:15px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; justify-content:center; margin-bottom:10px; transition:background 0.15s; }
+.btn-loc:hover { background:#d4920a; }
+.btn-loc:disabled { background:var(--gray-400); cursor:not-allowed; }
+.btn-maps-confirm { display:flex; align-items:center; gap:8px; width:100%; padding:13px; background:var(--green); color:white; border:none; border-radius:10px; font-size:15px; font-weight:700; font-family:'Plus Jakarta Sans',sans-serif; cursor:pointer; justify-content:center; transition:background 0.15s; }
+.btn-maps-confirm:hover { background:var(--green-mid); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="index.html">
+    <div class="brand-icon">🏢</div>
+    <div>
+      <div class="brand-text">SINARA</div>
+      <span class="brand-sub">Sistem Informasi Manajemen Bantuan & Aset Rumah Ibadah</span>
+    </div>
+  </a>
+  <a class="back-btn" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 13L5 8l5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kembali
+  </a>
+</div>
+
+<!-- PAGE ENTRY -->
+<div class="page-entry" id="pageEntry">
+  <div class="page-entry-inner">
+    <div class="page-entry-icon">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <rect x="4" y="4" width="28" height="28" rx="5" stroke="#f0a500" stroke-width="2"/>
+        <circle cx="18" cy="15" r="5" stroke="#f0a500" stroke-width="2"/>
+        <path d="M8 30c0-5 4.5-8 10-8s10 3 10 8" stroke="#f0a500" stroke-width="2" stroke-linecap="round"/>
+        <path d="M26 10v6M23 13h6" stroke="#f0a500" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>Daftarkan Rumah Ibadah</h1>
+    <p>Daftarkan rumah ibadah Anda ke sistem SINARA agar dapat mengikuti program bantuan pendanaan dari Pemerintah Kota Depok. Proses verifikasi berlangsung 3–7 hari kerja.</p>
+    <button class="btn-mulai" onclick="mulaiIsi()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Mulai Pendaftaran
+    </button>
+    <div class="entry-meta">
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Estimasi 7–10 menit
+      </div>
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6C12.5 3.5 10.5 1.5 8 1.5z" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="6" r="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+        Semua wilayah Kota Depok
+      </div>
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M13 5.5L6 12.5 3 9.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Semua agama & kepercayaan
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-area" id="formArea">
+<div class="pg-body">
+
+  <div class="note-blue">
+    <span class="note-title">ℹ️ Cara kerja pendaftaran</span>
+    Setelah formulir dikirim, petugas Pemkot Depok akan memverifikasi data Anda dalam 3–7 hari kerja. Rumah ibadah yang sudah terverifikasi dapat mengajukan bantuan melalui menu Pengajuan Bantuan.
+  </div>
+
+  <!-- CARD 1: Identitas -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">1</span> Identitas Rumah Ibadah</div>
+    <div class="form-group">
+      <label>Jenis Rumah Ibadah <span class="req">*</span></label>
+      <select class="form-control">
+        <option value="">-- Pilih jenis --</option>
+        <option>Masjid</option><option>Mushola</option>
+        <option>Gereja Protestan</option><option>Gereja Katolik</option>
+        <option>Pura</option><option>Klenteng</option><option>Vihara</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nama Rumah Ibadah <span class="req">*</span></label>
+      <input type="text" class="form-control" placeholder="Contoh: Masjid Al-Hikmah">
+    </div>
+    <div class="form-group">
+      <label>Tahun Berdiri</label>
+      <input type="number" class="form-control" placeholder="Contoh: 1998" min="1900" max="2025">
+    </div>
+
+  </div>
+
+  <!-- CARD 2: Lokasi -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">2</span> Lokasi</div>
+    <div class="form-group">
+      <label>Alamat Jalan <span class="req">*</span></label>
+      <input type="text" class="form-control" placeholder="Contoh: Jl. Merdeka No. 12 RT 03 RW 05">
+    </div>
+    <div class="form-group">
+      <label>Kecamatan <span class="req">*</span></label>
+      <select class="form-control" id="sel-kecamatan" onchange="updateKelurahan(this.value)">
+        <option value="">-- Pilih kecamatan --</option>
+        <option value="beji">Beji</option><option value="bojongsari">Bojongsari</option>
+        <option value="cilodong">Cilodong</option><option value="cimanggis">Cimanggis</option>
+        <option value="cinere">Cinere</option><option value="cipayung">Cipayung</option>
+        <option value="limo">Limo</option><option value="pancoran-mas">Pancoran Mas</option>
+        <option value="sawangan">Sawangan</option><option value="sukmajaya">Sukmajaya</option>
+        <option value="tapos">Tapos</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Kelurahan <span class="req">*</span></label>
+      <select class="form-control" id="sel-kelurahan">
+        <option value="">-- Pilih kecamatan terlebih dahulu --</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>RT / RW</label>
+      <div class="form-row">
+        <input type="text" class="form-control" placeholder="RT (Contoh: 003)">
+        <input type="text" class="form-control" placeholder="RW (Contoh: 007)">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Lokasi di Peta <span class="req">*</span></label>
+      <div id="inline-map-wrap" style="border:2px solid var(--gray-200);border-radius:14px;overflow:hidden;background:#f0f4f8;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:white;border-bottom:1px solid var(--gray-100);gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6C12.5 3.5 10.5 1.5 8 1.5z" fill="var(--accent)" stroke="var(--accent)" stroke-width="0.5"/><circle cx="8" cy="6" r="1.5" fill="white"/></svg>
+            <span style="font-size:12px;font-weight:700;color:var(--gray-600);font-family:'Plus Jakarta Sans',sans-serif;">Klik peta atau geser pin untuk pilih lokasi</span>
+          </div>
+          <button type="button" id="btn-my-location" onclick="gunakanLokasiSaatIni()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--accent);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:background 0.15s;white-space:nowrap;" onmouseover="this.style.background='#d4920a'" onmouseout="this.style.background='var(--accent)'">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Lokasi Saya
+          </button>
+        </div>
+        <div id="leaflet-map" style="width:100%;height:300px;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:white;border-top:1px solid var(--gray-100);gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5" stroke="var(--gray-400)" stroke-width="1.5"/><circle cx="8" cy="8" r="2" fill="var(--gray-400)"/></svg>
+            <span id="coords-display" style="font-size:12px;color:var(--gray-400);font-family:'DM Sans',sans-serif;">Pin belum diletakkan</span>
+          </div>
+          <button type="button" id="btn-confirm-loc" onclick="konfirmasiLokasiPeta()" disabled style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--green);color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;cursor:not-allowed;opacity:0.4;transition:all 0.15s;white-space:nowrap;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Gunakan Lokasi Ini
+          </button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="position:relative;flex:1;">
+          <input type="text" class="form-control" id="input-gmaps" placeholder="Pilih lokasi di peta — link otomatis terisi di sini" readonly style="padding-right:36px;background:var(--gray-50);cursor:default;color:var(--gray-700);font-size:13px;">
+          <button type="button" id="btn-clear-loc" onclick="hapusLokasiPeta()" title="Hapus lokasi" style="display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray-400);font-size:16px;line-height:1;padding:2px;">✕</button>
+        </div>
+        <a id="btn-open-gmaps" href="#" target="_blank" style="display:none;align-items:center;gap:5px;padding:11px 13px;background:#4285f4;color:white;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;text-decoration:none;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#2d6fd4'" onmouseout="this.style.background='#4285f4'">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none"><path d="M7 1h4v4M11 1L5 7M2 3H1v8h8v-1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Buka
+        </a>
+      </div>
+      <div class="form-hint">Klik di peta atau drag pin untuk pilih lokasi, lalu klik <strong>Gunakan Lokasi Ini</strong>.</div>
+    </div>
+  </div>
+
+  <!-- CARD 3: PIC -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">3</span> Data PIC</div>
+    <div class="form-group">
+      <label>Nama PIC <span class="req">*</span></label>
+      <input type="text" class="form-control" placeholder="Nama lengkap sesuai KTP">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>No. Telepon / WhatsApp <span class="req">*</span></label>
+        <input type="tel" class="form-control" placeholder="08xxxxxxxxxx">
+        <div class="form-hint">Untuk dihubungi petugas Pemkot Depok.</div>
+      </div>
+      <div class="form-group">
+        <label>Email (Opsional)</label>
+        <input type="email" class="form-control" placeholder="email@contoh.com">
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="kirimPendaftaran()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l5 5L14 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kirim Pendaftaran
+  </button>
+
+</div>
+</div>
+
+<!-- PENDING STATE -->
+<div class="pending-state" id="pendingState">
+<div class="pg-body">
+  <div class="pending-banner">
+    <div style="font-size:48px;">⏳</div>
+    <div class="status-pill">● Menunggu Verifikasi</div>
+    <h3>Pendaftaran Sedang Diproses</h3>
+    <p>Data rumah ibadah Anda sudah kami terima dan sedang dalam antrian verifikasi. Petugas Pemkot Depok akan memeriksa dan menghubungi Anda dalam 3–7 hari kerja.</p>
+  </div>
+  <div class="note-blue">
+    Jika ada pertanyaan atau membutuhkan konfirmasi, hubungi kantor Dinas Kesatuan Bangsa dan Politik Kota Depok dengan menyebutkan nama rumah ibadah yang didaftarkan.
+  </div>
+  <button class="btn-primary" onclick="daftarLagi()" style="background:var(--accent);">
+    + Daftarkan Rumah Ibadah Lain
+  </button>
+  <a href="pengajuan-bantuan.html" class="btn-secondary" style="display:block;text-align:center;text-decoration:none;margin-top:8px;">Lanjut ke Pengajuan Bantuan →</a>
+</div>
+</div>
+
+<script>
+function mulaiIsi() {
+  document.getElementById('pageEntry').style.display = 'none';
+  document.getElementById('formArea').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+function kirimPendaftaran() {
+  document.getElementById('formArea').style.display = 'none';
+  document.getElementById('pendingState').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+function daftarLagi() {
+  document.getElementById('pendingState').style.display = 'none';
+  document.getElementById('formArea').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+const kelurahan = {
+  'beji': ['Beji','Beji Timur','Kemiri Muka','Kukusan','Pondok Cina','Tanah Baru'],
+  'bojongsari': ['Bojongsari','Bojongsari Baru','Curug','Duren Mekar','Duren Seribu','Pondok Jaya','Serua'],
+  'cilodong': ['Cilodong','Jatimulya','Kalibaru','Kalimulya','Sukamaju'],
+  'cimanggis': ['Cisalak','Cisalak Pasar','Curug','Harjamukti','Mekarsari','Narogong','Pabuaran','Pasir Gunung Selatan','Tugu'],
+  'cinere': ['Cinere','Gandul','Pangkalan Jati','Pangkalan Jati Baru'],
+  'cipayung': ['Bojong Pondok Terong','Cipayung','Cipayung Jaya','Pondok Jaya','Ratujaya'],
+  'limo': ['Grogol','Krukut','Limo','Meruyung'],
+  'pancoran-mas': ['Depok','Depok Jaya','Mampang','Pancoran Mas','Rangkapan Jaya','Rangkapan Jaya Baru'],
+  'sawangan': ['Bedahan','Cinangka','Kedaung','Pasir Putih','Pengasinan','Sawangan','Sawangan Baru'],
+  'sukmajaya': ['Abadijaya','Baktijaya','Cisalak','Mekarjaya','Sukmajaya','Tirtajaya'],
+  'tapos': ['Cimpaeun','Cilangkap','Jatijajar','Leuwinanggung','Sukamaju Baru','Sukatani','Tapos']
+};
+function updateKelurahan(kec) {
+  const sel = document.getElementById('sel-kelurahan');
+  if (!kec || !kelurahan[kec]) { sel.innerHTML = '<option value="">-- Pilih kecamatan terlebih dahulu --</option>'; return; }
+  sel.innerHTML = '<option value="">-- Pilih kelurahan --</option>';
+  kelurahan[kec].forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = k; sel.appendChild(o); });
+}
+</script>
+
+
+<script>
+// =============================================
+// LEAFLET INLINE MAP PICKER
+// =============================================
+var _leafletMap = null;
+var _leafletMarker = null;
+var _selectedLat = null;
+var _selectedLng = null;
+var _mapConfirmed = false;
+
+function initLeafletMap() {
+  if (_leafletMap) return;
+  
+  // Default center: Depok, West Java
+  var defaultLat = -6.4025;
+  var defaultLng = 106.7942;
+  
+  _leafletMap = L.map('leaflet-map', {
+    zoomControl: true,
+    scrollWheelZoom: true
+  }).setView([defaultLat, defaultLng], 14);
+  
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: 19
+  }).addTo(_leafletMap);
+  
+  // Custom red marker icon
+  var redIcon = L.icon({
+    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+  
+  // Click on map to place/move marker
+  _leafletMap.on('click', function(e) {
+    setMarker(e.latlng.lat, e.latlng.lng);
+  });
+  
+  function setMarker(lat, lng) {
+    _selectedLat = lat.toFixed(6);
+    _selectedLng = lng.toFixed(6);
+    
+    if (_leafletMarker) {
+      _leafletMarker.setLatLng([lat, lng]);
+    } else {
+      _leafletMarker = L.marker([lat, lng], {
+        draggable: true,
+        icon: redIcon
+      }).addTo(_leafletMap);
+      
+      _leafletMarker.on('dragend', function(ev) {
+        var pos = ev.target.getLatLng();
+        _selectedLat = pos.lat.toFixed(6);
+        _selectedLng = pos.lng.toFixed(6);
+        updateCoordsDisplay();
+        resetConfirmState();
+      });
+    }
+    
+    updateCoordsDisplay();
+    resetConfirmState();
+  }
+  
+  // Store setMarker globally
+  window._setLeafletMarker = setMarker;
+}
+
+function updateCoordsDisplay() {
+  var el = document.getElementById('coords-display');
+  var btn = document.getElementById('btn-confirm-loc');
+  if (_selectedLat && _selectedLng) {
+    el.textContent = 'Lat: ' + _selectedLat + ', Lng: ' + _selectedLng;
+    el.style.color = 'var(--gray-700)';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+}
+
+function resetConfirmState() {
+  _mapConfirmed = false;
+  var btn = document.getElementById('btn-confirm-loc');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Gunakan Lokasi Ini';
+  btn.style.background = 'var(--green)';
+}
+
+function konfirmasiLokasiPeta() {
+  if (!_selectedLat || !_selectedLng) return;
+  var link = 'https://maps.google.com/?q=' + _selectedLat + ',' + _selectedLng;
+  document.getElementById('input-gmaps').value = link;
+  
+  // Show clear & open buttons
+  document.getElementById('btn-clear-loc').style.display = 'block';
+  var btnOpen = document.getElementById('btn-open-gmaps');
+  btnOpen.href = link;
+  btnOpen.style.display = 'inline-flex';
+  
+  // Update confirm button state
+  var btn = document.getElementById('btn-confirm-loc');
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Tersimpan ✓';
+  btn.style.background = '#2d8f63';
+  
+  _mapConfirmed = true;
+}
+
+function hapusLokasiPeta() {
+  document.getElementById('input-gmaps').value = '';
+  document.getElementById('btn-clear-loc').style.display = 'none';
+  var btnOpen = document.getElementById('btn-open-gmaps');
+  btnOpen.style.display = 'none';
+  btnOpen.href = '#';
+  
+  // Reset marker
+  if (_leafletMarker) {
+    _leafletMap.removeLayer(_leafletMarker);
+    _leafletMarker = null;
+  }
+  _selectedLat = null;
+  _selectedLng = null;
+  
+  var el = document.getElementById('coords-display');
+  el.textContent = 'Pin belum diletakkan';
+  el.style.color = 'var(--gray-400)';
+  
+  var btn = document.getElementById('btn-confirm-loc');
+  btn.disabled = true;
+  btn.style.opacity = '0.4';
+  btn.style.cursor = 'not-allowed';
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 8l4 4 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Gunakan Lokasi Ini';
+  btn.style.background = 'var(--green)';
+  _mapConfirmed = false;
+}
+
+function gunakanLokasiSaatIni() {
+  var btn = document.getElementById('btn-my-location');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 2"/></svg> Mendeteksi...';
+  
+  if (!navigator.geolocation) {
+    alert('Geolocation tidak didukung browser ini.');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Lokasi Saya';
+    return;
+  }
+  
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude;
+    var lng = pos.coords.longitude;
+    _leafletMap.setView([lat, lng], 17);
+    window._setLeafletMarker(lat, lng);
+    
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Perbarui Lokasi';
+  }, function() {
+    alert('Tidak dapat mengakses lokasi. Pastikan izin lokasi browser diaktifkan.');
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Lokasi Saya';
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+// Init map when DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+  initLeafletMap();
+});
+</script>
+
+</body>
+</html>

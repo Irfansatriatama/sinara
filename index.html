@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Portal Pengurus</title>
+<link rel="stylesheet" href="assets/css/global.css">
+</head>
+<body>
+
+<!-- WIREFRAME NAV -->
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+  </div>
+
+<div style="padding-top:48px;">
+<div class="pengurus-page">
+
+  <!-- Topbar -->
+  <div class="pengurus-topbar">
+    <div class="brand">✨ SINARA</div>
+    <div class="user-info">Halo, Pak Ahmad · <span style="cursor:pointer;opacity:0.7;">Keluar</span></div>
+  </div>
+
+  <div class="pengurus-body">
+
+    <div class="info-note">
+      <strong>📋 Apa yang perlu dilakukan?</strong>
+      Lengkapi data rumah ibadah Anda di bawah ini. Data ini akan diverifikasi oleh petugas kelurahan sebelum resmi terdaftar. Jika ada pertanyaan, hubungi kelurahan setempat.
+    </div>
+
+    <div class="status-banner pending">
+      <div class="banner-label">Status Pendaftaran</div>
+      <div class="banner-title">⏳ Menunggu Pengisian Data</div>
+      <div class="banner-desc">Formulir di bawah belum lengkap. Silakan isi dan kirim untuk diverifikasi.</div>
+    </div>
+
+    <!-- SECTION 1: JENIS -->
+    <div class="form-card">
+      <div class="section-title"><span class="ico">1</span> Jenis Rumah Ibadah</div>
+      <div class="section-desc">Pilih jenis rumah ibadah yang Anda urus</div>
+      <div class="jenis-grid">
+        <div class="jenis-btn selected"><span class="ji">🕌</span>Masjid / Mushola</div>
+        <div class="jenis-btn"><span class="ji">⛪</span>Gereja</div>
+        <div class="jenis-btn"><span class="ji">🛕</span>Pura</div>
+        <div class="jenis-btn"><span class="ji">🏯</span>Klenteng</div>
+        <div class="jenis-btn"><span class="ji">🕍</span>Vihara</div>
+        <div class="jenis-btn"><span class="ji">🏛️</span>Lainnya</div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: IDENTITAS -->
+    <div class="form-card">
+      <div class="section-title"><span class="ico">2</span> Identitas Rumah Ibadah</div>
+      <div class="section-desc">Isi informasi dasar rumah ibadah</div>
+
+      <div class="form-group">
+        <label>Nama Rumah Ibadah <span class="req">*</span></label>
+        <input class="form-control" type="text" placeholder="Contoh: Masjid Al-Ikhlas" value="Masjid Al-Ikhlas">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tahun Berdiri <span class="req">*</span></label>
+          <input class="form-control" type="number" placeholder="Contoh: 1985" value="1992">
+        </div>
+        <div class="form-group">
+          <label>Kapasitas Jamaah</label>
+          <input class="form-control" type="number" placeholder="Estimasi jumlah orang">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Kondisi Bangunan Saat Ini <span class="req">*</span></label>
+        <div class="kondisi-grid">
+          <div class="kondisi-btn sel-green" id="k0">✅ Baik</div>
+          <div class="kondisi-btn" id="k1">⚠️ Perlu Renovasi</div>
+          <div class="kondisi-btn" id="k2">🔴 Kritis</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: LOKASI -->
+    <div class="form-card">
+      <div class="section-title"><span class="ico">3</span> Lokasi</div>
+      <div class="section-desc">Masukkan alamat lengkap rumah ibadah</div>
+
+      <div class="form-group">
+        <label>Alamat Jalan <span class="req">*</span></label>
+        <input class="form-control" type="text" placeholder="Nama jalan, nomor, RT/RW">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Kelurahan <span class="req">*</span></label>
+          <select class="form-control" id="kelurahan" onchange="autoKec()">
+            <option value="">-- Pilih Kelurahan --</option>
+            <option value="Beji" selected>Kel. Beji</option>
+            <option value="Beji">Kel. Pondok Cina</option>
+            <option value="Beji">Kel. Kukusan</option>
+            <option value="Pancoran Mas">Kel. Depok</option>
+            <option value="Pancoran Mas">Kel. Pancoran Mas</option>
+            <option value="Sukmajaya">Kel. Sukmajaya</option>
+            <option value="Sukmajaya">Kel. Mekarjaya</option>
+            <option value="Cimanggis">Kel. Cisalak</option>
+            <option value="Cimanggis">Kel. Harjamukti</option>
+            <option value="Sawangan">Kel. Sawangan</option>
+            <option value="Sawangan">Kel. Kedaung</option>
+            <option value="Bojongsari">Kel. Bojongsari</option>
+            <option value="Cilodong">Kel. Cilodong</option>
+            <option value="Cinere">Kel. Cinere</option>
+            <option value="Cipayung">Kel. Cipayung</option>
+            <option value="Limo">Kel. Limo</option>
+            <option value="Tapos">Kel. Tapos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Kecamatan <span class="req">*</span></label>
+          <input class="form-control" type="text" id="kecamatan" placeholder="Otomatis terisi" readonly style="background:#f2f4f7;color:#475467;">
+        </div>
+      </div>
+      <div class="form-hint">💡 Pilih kelurahan dulu, kecamatan akan otomatis terisi</div>
+    </div>
+
+    <!-- SECTION 4: PENGURUS -->
+    <div class="form-card">
+      <div class="section-title"><span class="ico">4</span> Data Pengurus</div>
+      <div class="section-desc">Informasi kontak pengurus yang bertanggung jawab</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nama Ketua Pengurus <span class="req">*</span></label>
+          <input class="form-control" type="text" placeholder="Nama lengkap" value="Ahmad Fauzan">
+        </div>
+        <div class="form-group">
+          <label>No. Telepon / WhatsApp <span class="req">*</span></label>
+          <input class="form-control" type="tel" placeholder="08xxxxxxxxxx">
+        </div>
+      </div>
+      <div class="form-hint">📞 Nomor ini akan digunakan untuk konfirmasi verifikasi</div>
+    </div>
+
+    <!-- SECTION 5: FOTO -->
+    <div class="form-card">
+      <div class="section-title"><span class="ico">5</span> Foto Bangunan</div>
+      <div class="section-desc">Upload 1–3 foto tampak depan bangunan</div>
+      <div class="upload-area">
+        <div class="up-icon">📷</div>
+        <p><span>Klik untuk pilih foto</span> dari galeri HP atau komputer</p>
+        <p style="margin-top:4px;">Format: JPG, PNG · Maksimal 5MB per foto</p>
+      </div>
+    </div>
+
+    <button class="btn-submit">📤 Kirim untuk Diverifikasi</button>
+
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--gray-400);">
+      Setelah dikirim, petugas kelurahan akan menghubungi Anda dalam 3–5 hari kerja.
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// Auto-fill kecamatan based on kelurahan
+function autoKec() {
+  const val = document.getElementById('kelurahan').value;
+  document.getElementById('kecamatan').value = val || '';
+}
+autoKec();
+
+// Jenis toggle
+document.querySelectorAll('.jenis-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.jenis-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
+// Kondisi toggle
+const classes = ['sel-green','sel-yellow','sel-red'];
+['k0','k1','k2'].forEach((id, i) => {
+  document.getElementById(id).addEventListener('click', () => {
+    ['k0','k1','k2'].forEach((kid, j) => {
+      document.getElementById(kid).className = 'kondisi-btn' + (j===i ? ' '+classes[i] : '');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

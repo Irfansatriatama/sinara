@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Data Pengurus</title>
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .pg-page { background: var(--gray-100); min-height: 100vh; }
+  .pg-topbar { background: var(--green); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .pg-brand { display: flex; align-items: center; gap: 10px; }
+  .pg-brand .brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pg-brand .brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; }
+  .pg-brand .brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+  .topbar-back { display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 600; transition: background 0.15s; }
+  .topbar-back:hover { background: rgba(255,255,255,0.2); }
+
+  .pg-body { max-width: 760px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--gray-400); margin-bottom: 24px; }
+
+  /* RI INFO STRIP */
+  .ri-strip { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .ri-strip .rs-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); }
+  .ri-strip .rs-sub { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .status-pill.registered { background: var(--green-light); color: var(--green); border: 1.5px solid #a5d6bc; }
+  .status-pill .pill-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* TABLE CARD */
+  .table-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .table-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--gray-100); }
+  .table-header-left .th-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); }
+  .table-header-left .th-count { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+  .btn-add { display: inline-flex; align-items: center; gap: 8px; background: var(--green); color: white; border: none; border-radius: 10px; padding: 10px 18px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; text-decoration: none; }
+  .btn-add:hover { background: var(--green-mid); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; }
+  thead th { padding: 11px 24px; text-align: left; font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.6px; font-family: 'Plus Jakarta Sans', sans-serif; border-bottom: 1px solid var(--gray-100); background: var(--gray-50); }
+  tbody td { padding: 15px 24px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--gray-50); }
+
+  /* AVATAR + NAME */
+  .cell-name { display: flex; align-items: center; gap: 12px; }
+  .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+  .name-main { font-size: 15px; font-weight: 600; color: var(--gray-800); }
+
+  /* JABATAN BADGE */
+  .badge-jabatan { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .jabatan-ketua { background: var(--green-light); color: var(--green); }
+  .jabatan-sekretaris { background: var(--blue-soft); color: var(--blue); }
+  .jabatan-bendahara { background: var(--accent-soft); color: #a16207; }
+  .jabatan-anggota { background: var(--gray-100); color: var(--gray-600); }
+
+  /* CONTACT CELL */
+  .cell-contact { font-size: 14px; color: var(--gray-600); }
+  .cell-contact .sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; display: block; }
+
+  /* ACTION MENU */
+  .action-wrap { position: relative; }
+  .btn-dots { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid var(--gray-200); background: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 3px; padding: 0; transition: all 0.15s; }
+  .btn-dots:hover { border-color: var(--gray-400); background: var(--gray-50); }
+  .btn-dots span { display: block; width: 4px; height: 4px; border-radius: 50%; background: var(--gray-600); }
+  .action-menu { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: white; border: 1px solid var(--gray-200); border-radius: 10px; box-shadow: 0 6px 24px rgba(0,0,0,0.12); min-width: 140px; overflow: hidden; z-index: 50; }
+  .action-menu.open { display: block; }
+  .action-item { display: flex; align-items: center; gap: 9px; padding: 11px 16px; font-size: 14px; color: var(--gray-600); cursor: pointer; transition: background 0.1s; }
+  .action-item:hover { background: var(--gray-50); color: var(--gray-800); }
+  .action-item.danger { color: var(--red); }
+  .action-item.danger:hover { background: var(--red-soft); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 52px 24px; }
+  .es-icon { font-size: 48px; margin-bottom: 14px; }
+  .es-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; }
+  .es-desc { font-size: 14px; color: var(--gray-400); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: white; border-radius: 18px; width: 100%; max-width: 460px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
+  .modal-header { background: var(--green); padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: white; }
+  .modal-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .modal-close:hover { background: rgba(255,255,255,0.3); }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; justify-content: flex-end; }
+
+  .form-row { margin-bottom: 18px; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-800); margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .form-input { width: 100%; padding: 12px 15px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); background: white; transition: all 0.15s; outline: none; box-sizing: border-box; }
+  .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  .form-input::placeholder { color: var(--gray-400); }
+  select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%2398a2b3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
+
+  .btn-primary { background: var(--green); color: white; border: none; border-radius: 10px; padding: 11px 22px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 11px 20px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+  .btn-secondary:hover { border-color: var(--gray-400); }
+
+  /* CONFIRM MODAL */
+  .confirm-modal { max-width: 380px; }
+  .confirm-body { padding: 32px 24px; text-align: center; }
+  .confirm-icon { font-size: 48px; margin-bottom: 14px; }
+  .confirm-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: var(--gray-800); margin-bottom: 8px; }
+  .confirm-desc { font-size: 14px; color: var(--gray-400); line-height: 1.6; }
+  .btn-danger { background: var(--red); color: white; border: none; border-radius: 10px; padding: 11px 22px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .btn-danger:hover { background: #c04040; }
+
+  @media (max-width: 600px) {
+    thead th:nth-child(2), tbody td:nth-child(2) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="pg-page">
+
+  <div class="pg-topbar">
+    <div class="pg-brand">
+      <div class="brand-icon">🕌</div>
+      <div>
+        <div class="brand-text">SINARA</div>
+        <span class="brand-sub">Portal Pengurus Rumah Ibadah</span>
+      </div>
+    </div>
+    <a class="topbar-back" href="dashboard-pengurus.html">← Kembali</a>
+  </div>
+
+  <div class="pg-body">
+
+    <div class="page-title">Data Pengurus</div>
+    <p class="page-subtitle">Kelola daftar pengurus rumah ibadah Anda.</p>
+
+    <!-- RI Info Strip -->
+    <div class="ri-strip">
+      <div>
+        <div class="rs-name">Masjid Al-Ikhlas</div>
+        <div class="rs-sub">Jl. Margonda Raya No. 54 · Pancoran Mas</div>
+      </div>
+      <span class="status-pill registered"><span class="pill-dot"></span> Terdaftar</span>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-header-left">
+          <div class="th-title">Daftar Pengurus</div>
+          <div class="th-count" id="pengurus-count">3 pengurus terdaftar</div>
+        </div>
+        <button class="btn-add" onclick="openModal()">+ Tambah Pengurus</button>
+      </div>
+
+      <div id="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Jabatan</th>
+              <th>Kontak</th>
+              <th style="width:50px;"></th>
+            </tr>
+          </thead>
+          <tbody id="pengurus-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODAL TAMBAH/EDIT -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Tambah Pengurus</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" class="form-input" id="input-nama" placeholder="Masukkan nama lengkap">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Jabatan</label>
+        <select class="form-input" id="input-jabatan">
+          <option value="">-- Pilih Jabatan --</option>
+          <option value="ketua">Ketua</option>
+          <option value="sekretaris">Sekretaris</option>
+          <option value="bendahara">Bendahara</option>
+          <option value="anggota">Anggota</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="input-email" placeholder="contoh@email.com">
+      </div>
+      <div class="form-row">
+        <label class="form-label">No. Telepon / WhatsApp</label>
+        <input type="tel" class="form-input" id="input-telp" placeholder="08xxxxxxxxxx">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Batal</button>
+      <button class="btn-primary" onclick="savePengurus()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KONFIRMASI HAPUS -->
+<div class="modal-overlay" id="confirm-overlay" onclick="closeConfirmOutside(event)">
+  <div class="modal confirm-modal">
+    <div class="confirm-body">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">Hapus Pengurus?</div>
+      <div class="confirm-desc">Data <strong id="confirm-name"></strong> akan dihapus dari daftar. Tindakan ini tidak dapat dibatalkan.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeConfirm()">Batal</button>
+      <button class="btn-danger" onclick="confirmDelete()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let pengurusData = [
+  { id: 1, nama: 'H. Ahmad Fauzi', jabatan: 'ketua', email: 'ahmad@email.com', telp: '081234567890' },
+  { id: 2, nama: 'Siti Rahayu', jabatan: 'sekretaris', email: 'siti@email.com', telp: '082345678901' },
+  { id: 3, nama: 'Budi Santoso', jabatan: 'bendahara', email: 'budi@email.com', telp: '083456789012' },
+];
+let editId = null, deleteId = null, nextId = 4;
+
+const jabatanLabel = { ketua:'Ketua', sekretaris:'Sekretaris', bendahara:'Bendahara', anggota:'Anggota' };
+const jabatanClass = { ketua:'jabatan-ketua', sekretaris:'jabatan-sekretaris', bendahara:'jabatan-bendahara', anggota:'jabatan-anggota' };
+
+function getInitials(nama) {
+  return nama.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+}
+
+function renderTable() {
+  document.getElementById('pengurus-count').textContent = pengurusData.length + ' pengurus terdaftar';
+  const container = document.getElementById('table-container');
+  if (pengurusData.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="es-icon">👥</div><div class="es-title">Belum ada pengurus</div><div class="es-desc">Klik tombol "Tambah Pengurus" untuk menambahkan.</div></div>`;
+    return;
+  }
+  if (!document.getElementById('pengurus-tbody')) {
+    container.innerHTML = `<table><thead><tr><th>Nama</th><th>Jabatan</th><th>Kontak</th><th style="width:50px;"></th></tr></thead><tbody id="pengurus-tbody"></tbody></table>`;
+  }
+  document.getElementById('pengurus-tbody').innerHTML = pengurusData.map(p => `
+    <tr>
+      <td>
+        <div class="cell-name">
+          <div class="avatar">${getInitials(p.nama)}</div>
+          <div class="name-main">${p.nama}</div>
+        </div>
+      </td>
+      <td><span class="badge-jabatan ${jabatanClass[p.jabatan]}">${jabatanLabel[p.jabatan]}</span></td>
+      <td class="cell-contact">
+        ${p.telp}
+        <span class="sub">${p.email}</span>
+      </td>
+      <td>
+        <div class="action-wrap">
+          <button class="btn-dots" onclick="toggleMenu(event, ${p.id})">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="action-menu" id="menu-${p.id}">
+            <div class="action-item" onclick="editPengurus(${p.id}); closeAllMenus()">Edit</div>
+            <div class="action-item danger" onclick="openConfirm(${p.id}, '${p.nama}'); closeAllMenus()">Hapus</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function toggleMenu(e, id) {
+  e.stopPropagation();
+  const menu = document.getElementById('menu-' + id);
+  const wasOpen = menu.classList.contains('open');
+  closeAllMenus();
+  if (!wasOpen) menu.classList.add('open');
+}
+function closeAllMenus() {
+  document.querySelectorAll('.action-menu').forEach(m => m.classList.remove('open'));
+}
+document.addEventListener('click', closeAllMenus);
+
+function openModal(id = null) {
+  editId = id;
+  document.getElementById('modal-title').textContent = id ? 'Edit Pengurus' : 'Tambah Pengurus';
+  if (id) {
+    const p = pengurusData.find(x => x.id === id);
+    document.getElementById('input-nama').value = p.nama;
+    document.getElementById('input-jabatan').value = p.jabatan;
+    document.getElementById('input-email').value = p.email;
+    document.getElementById('input-telp').value = p.telp;
+  } else {
+    ['input-nama','input-jabatan','input-email','input-telp'].forEach(f => document.getElementById(f).value = '');
+  }
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function editPengurus(id) { openModal(id); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+
+function savePengurus() {
+  const nama = document.getElementById('input-nama').value.trim();
+  const jabatan = document.getElementById('input-jabatan').value;
+  const email = document.getElementById('input-email').value.trim();
+  const telp = document.getElementById('input-telp').value.trim();
+  if (!nama || !jabatan || !email || !telp) { alert('Semua kolom harus diisi.'); return; }
+  if (editId) {
+    const idx = pengurusData.findIndex(x => x.id === editId);
+    pengurusData[idx] = { id: editId, nama, jabatan, email, telp };
+  } else {
+    pengurusData.push({ id: nextId++, nama, jabatan, email, telp });
+  }
+  closeModal();
+  renderTable();
+}
+
+function openConfirm(id, nama) {
+  deleteId = id;
+  document.getElementById('confirm-name').textContent = nama;
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('show'); }
+function closeConfirmOutside(e) { if (e.target === document.getElementById('confirm-overlay')) closeConfirm(); }
+function confirmDelete() {
+  pengurusData = pengurusData.filter(x => x.id !== deleteId);
+  closeConfirm();
+  renderTable();
+}
+
+renderTable();
+</script>
+</body>
+</html>

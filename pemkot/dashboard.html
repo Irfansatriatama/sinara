@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Dashboard Pemda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/global.css">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-600); }
+
+/* ===== LAYOUT ===== */
+.pemda-layout { display: flex; min-height: 100vh; }
+
+/* ===== SIDEBAR ===== */
+.sidebar { height: 100%;width: 220px; background: var(--gray-800); color: white; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; }
+.sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo .logo-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+.sidebar-logo .logo-sub { font-size: 10px; opacity: 0.45; margin-top: 3px; }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: var(--green); color: white; font-weight: 700; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-user { display: flex; align-items: center; gap: 10px; }
+.sidebar-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 700; color: white; }
+.sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+.btn-keluar { font-size: 11px; color: rgba(255,255,255,0.35); cursor: pointer; margin-top: 8px; display: inline-block; transition: color 0.15s; }
+.btn-keluar:hover { color: var(--red); }
+
+/* ===== MAIN CONTENT ===== */
+.main-content { margin-left: 220px; flex: 1; background: var(--gray-100); padding: 28px; min-height: 100vh; }
+.breadcrumb { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+.breadcrumb span { color: var(--gray-600); }
+
+/* ===== PAGE HEADER ===== */
+.page-header-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 20px; gap: 16px; flex-wrap: wrap;
+}
+.page-header-text h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 3px; }
+.page-header-text p { font-size: 13px; color: var(--gray-400); }
+
+.date-filter-bar {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  background: white; border: 1px solid var(--gray-200);
+  border-radius: 10px; padding: 8px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04); flex-shrink: 0;
+}
+.date-filter-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+.date-filter-sep { font-size: 12px; color: var(--gray-400); }
+.date-input { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--gray-800); border: 1px solid var(--gray-200); border-radius: 6px; padding: 5px 8px; background: var(--gray-50); outline: none; cursor: pointer; transition: border-color 0.15s; }
+.date-input:hover, .date-input:focus { border-color: var(--green); }
+.date-filter-divider { width: 1px; height: 18px; background: var(--gray-200); }
+.btn-filter-apply { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: white; background: var(--green); border: none; border-radius: 6px; padding: 5px 12px; cursor: pointer; transition: background 0.15s; white-space: nowrap; }
+.btn-filter-apply:hover { background: var(--green-mid); }
+.btn-filter-reset { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--gray-400); background: transparent; border: 1px solid var(--gray-200); border-radius: 6px; padding: 5px 10px; cursor: pointer; transition: all 0.15s; }
+.btn-filter-reset:hover { border-color: var(--gray-400); color: var(--gray-600); }
+.filter-active-badge { display: none; align-items: center; gap: 4px; background: var(--green-light); border: 1px solid #b3dcc9; border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: 600; color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif; }
+.filter-active-badge.show { display: flex; }
+
+/* ===== BANNER ===== */
+.aturan-banner { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #2558b0; line-height: 1.5; }
+.aturan-banner strong { font-weight: 700; }
+
+/* ===== STAT GRID ===== */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+.stat-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border-top: 3px solid transparent; }
+.stat-card.green { border-top-color: var(--green); }
+.stat-card.yellow { border-top-color: var(--accent); }
+.stat-card.blue { border-top-color: var(--blue); }
+.stat-card.red { border-top-color: var(--red); }
+.stat-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 8px; }
+.stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--gray-800); margin-bottom: 5px; }
+.stat-sub { font-size: 12px; color: var(--gray-400); }
+.badge-sm { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+.badge-sm.green { background: var(--green-light); color: var(--green); }
+.badge-sm.yellow { background: var(--accent-soft); color: #a16207; }
+.badge-sm.blue { background: var(--blue-soft); color: var(--blue); }
+.badge-sm.red { background: var(--red-soft); color: var(--red); }
+
+/* ===== CHARTS ROW ===== */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+.chart-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.chart-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 10px; }
+.chart-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+.chart-sub { font-size: 12px; color: var(--gray-400); }
+.chart-filter-select { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 600; color: var(--gray-600); background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; padding: 5px 10px; cursor: pointer; outline: none; transition: border-color 0.15s; flex-shrink: 0; }
+.chart-filter-select:hover, .chart-filter-select:focus { border-color: var(--green); color: var(--green); }
+
+/* ===== PERTUMBUHAN – LINE CHART ===== */
+.pstat-strip { display: flex; gap: 0; margin: 14px 0 16px; border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+.pstat-item { flex: 1; padding: 11px 14px; border-right: 1px solid var(--gray-200); }
+.pstat-item:last-child { border-right: none; }
+.pstat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: var(--gray-800); margin-bottom: 2px; }
+.pstat-val.up { color: var(--green); }
+.pstat-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+
+.linechart-wrap {
+  position: relative; width: 100%;
+}
+.linechart-canvas {
+  width: 100%; height: 180px; display: block; overflow: visible;
+}
+
+/* Tooltip */
+.chart-tooltip {
+  position: absolute; pointer-events: none; z-index: 20;
+  background: var(--gray-800); color: white; border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25); opacity: 0; transition: opacity 0.1s;
+  white-space: nowrap; min-width: 160px;
+}
+.chart-tooltip.show { opacity: 1; }
+.tooltip-month { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.45); margin-bottom: 8px; letter-spacing: 0.3px; text-transform: uppercase; }
+.tooltip-row { display: flex; align-items: center; gap: 7px; margin-bottom: 4px; }
+.tooltip-row:last-child { margin-bottom: 0; }
+.tooltip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.tooltip-lbl { flex: 1; font-size: 12px; color: rgba(255,255,255,0.65); }
+.tooltip-num { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 12px; }
+.tooltip-divider { height: 1px; background: rgba(255,255,255,0.12); margin: 5px 0; }
+
+/* Legend chips */
+.plegend-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--gray-100); }
+.plegend-chip {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--gray-600); background: var(--gray-50);
+  border: 1px solid var(--gray-200); border-radius: 20px;
+  padding: 3px 10px 3px 7px; cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.plegend-chip:hover { border-color: var(--gray-400); }
+.plegend-chip.dimmed { opacity: 0.35; }
+.plegend-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.plegend-chip-name { font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+.plegend-chip-num { color: var(--gray-400); margin-left: 2px; }
+
+/* Month indicator line */
+.month-line {
+  position: absolute; top: 0; width: 1px;
+  background: var(--gray-300); pointer-events: none;
+  opacity: 0; transition: opacity 0.08s;
+}
+.month-line.show { opacity: 1; }
+
+/* ===== BAR CHART (distribusi kecamatan) ===== */
+#barKec { padding-top: 8px; }
+#barKec > div:last-child { border-bottom: none !important; }
+
+/* ===== PIE CHARTS ===== */
+.pie-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+.pie-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.pie-body { display: flex; align-items: center; gap: 20px; margin-top: 14px; }
+.pie-legend { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+.pie-legend-item { display: flex; align-items: center; gap: 8px; }
+.pie-legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.pie-legend-label { font-size: 12px; color: var(--gray-600); flex: 1; }
+.pie-legend-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-800); }
+.pie-legend-pct { font-size: 11px; color: var(--gray-400); min-width: 38px; text-align: right; }
+
+/* ===== ANGGARAN ===== */
+.anggaran-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); margin-bottom: 22px; }
+.anggaran-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.anggaran-pct { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; color: var(--green); }
+.progress-row { margin-bottom: 12px; }
+.progress-row:last-child { margin-bottom: 0; }
+.progress-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-600); margin-bottom: 6px; }
+.progress-label span:last-child { font-weight: 700; color: var(--gray-800); font-size: 12px; }
+.progress-bar { height: 8px; background: var(--gray-100); border-radius: 8px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 8px; }
+
+/* ===== TABLE ROW ===== */
+.table-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.table-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.table-card-header { padding: 14px 18px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.table-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--gray-800); }
+.table-card-sub { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.table-card-link { font-size: 12px; font-weight: 600; color: var(--green); text-decoration: none; }
+.table-card-link:hover { text-decoration: underline; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: var(--gray-50); padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Plus Jakarta Sans', sans-serif; border-bottom: 1px solid var(--gray-100); }
+tbody td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--gray-700); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--gray-50); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.dot-green { background: var(--green); }
+.dot-yellow { background: var(--accent); }
+.dot-red { background: var(--red); }
+
+/* ===== USER ACTION MENU ===== */
+.sidebar-user-wrap { position: relative; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; }
+.btn-user-menu {
+  margin-left: auto; flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: transparent; border: none;
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.btn-user-menu:hover { background: rgba(255,255,255,0.1); }
+.btn-user-menu svg { display: block; }
+
+.user-dropdown {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: #263244; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+.user-dropdown.open { display: block; }
+a.user-dropdown-item { text-decoration: none; }
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.75); cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.user-dropdown-item:last-child { border-bottom: none; }
+.user-dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.user-dropdown-item.danger { color: #f87171; }
+.user-dropdown-item.danger:hover { background: rgba(248,113,113,0.1); }
+.user-dropdown-icon {
+  width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7;
+}
+
+/* ===== PERTUMBUHAN RICH SECTION ===== */
+
+.pert-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.pert-header-left {}
+.pert-header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* Per-kategori grid */
+.pert-kpi { display: flex; gap: 0; margin-bottom: 14px; border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+.pert-kpi-item { flex: 1; padding: 10px 14px; border-right: 1px solid var(--gray-200); }
+.pert-kpi-item:last-child { border-right: none; }
+.pert-kpi-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; color: var(--gray-800); }
+.pert-kpi-val.up { color: var(--green); }
+.pert-kpi-val.down { color: var(--red); }
+.pert-kpi-label { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+.pert-kpi-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 8px; margin-top: 2px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.pert-kpi-badge.up { background: var(--green-light); color: var(--green); }
+.pert-kpi-badge.down { background: var(--red-soft); color: var(--red); }
+
+/* Per-kategori grid */
+.kat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 4px 0; }
+.kat-card {
+  border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 12px;
+  cursor: default; transition: border-color 0.15s, box-shadow 0.15s;
+  position: relative; overflow: hidden;
+}
+.kat-card:hover { border-color: var(--green-mid); box-shadow: 0 2px 8px rgba(26,107,74,0.1); }
+.kat-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+.kat-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 11px; font-weight: 700; color: var(--gray-600); }
+.kat-icon { font-size: 14px; line-height: 1; }
+.kat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+.kat-growth { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+.kat-growth.up { color: var(--green); }
+.kat-growth.down { color: var(--red); }
+.kat-sparkline { width: 100%; height: 32px; display: block; }
+.kat-bar-track { height: 3px; background: var(--gray-100); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.kat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+
+/* Insight list */
+.insight-list { display: flex; flex-direction: column; gap: 10px; padding: 4px 0; }
+.insight-card {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--gray-200); background: var(--gray-50);
+}
+.insight-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.insight-icon.green { background: var(--green-light); }
+.insight-icon.blue { background: var(--blue-soft); }
+.insight-icon.yellow { background: var(--accent-soft); }
+.insight-icon.purple { background: #f0edff; }
+.insight-body { flex: 1; min-width: 0; }
+.insight-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 700; color: var(--gray-800); margin-bottom: 3px; }
+.insight-desc { font-size: 12px; color: var(--gray-400); line-height: 1.4; }
+.insight-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; flex-shrink: 0; }
+.insight-val.green { color: var(--green); }
+.insight-val.blue { color: var(--blue); }
+.insight-val.yellow { color: var(--accent); }
+
+</style>
+</head>
+<body>
+
+<div class="pemda-layout">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-brand">SINARA</div>
+      <div class="logo-sub">Kota Depok &middot; 2025</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" href="dashboard.html">Dashboard</a>
+      <a class="nav-item" href="data-ri.html">Data Rumah Ibadah</a>
+      <a class="nav-item" href="verifikasi.html">Verifikasi <span class="nav-badge">7</span></a>
+      <a class="nav-item" href="anggaran.html">Anggaran</a>
+      <a class="nav-item" href="laporan.html">Laporan</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user-wrap">
+        <div class="user-dropdown" id="userDropdown">
+          <a class="user-dropdown-item" href="profil.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 13c0-2.5 2.7-4 6-4s6 1.5 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Profil Saya
+          </a>
+          <a class="user-dropdown-item" href="ganti-password.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Ganti Password
+          </a>
+          <div class="user-dropdown-item danger" onclick="logout()">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Keluar
+          </div>
+        </div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">BD</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sidebar-user-name">Budi Darma</div>
+            <div class="sidebar-user-role">Admin Pemkot</div>
+          </div>
+          <button class="btn-user-menu" id="btnUserMenu" onclick="toggleUserMenu(event)" title="Menu akun">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="3" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="8" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="13" r="1.2" fill="rgba(255,255,255,0.6)"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="breadcrumb">Beranda <span>/ Dashboard</span></div>
+
+    <!-- PAGE HEADER + DATE FILTER -->
+    <div class="page-header-row">
+      <div class="page-header-text">
+        <h1>Dashboard Pemda</h1>
+        <p>Sistem Informasi &amp; Administrasi Rumah Ibadah — Kota Depok</p>
+      </div>
+      <div class="date-filter-bar">
+        <span class="date-filter-label">Periode</span>
+        <input type="date" class="date-input" id="dateFrom" value="2024-01-01">
+        <span class="date-filter-sep">—</span>
+        <input type="date" class="date-input" id="dateTo" value="2024-12-31">
+        <div class="date-filter-divider"></div>
+        <button class="btn-filter-apply" onclick="applyFilter()">Terapkan</button>
+        <button class="btn-filter-reset" onclick="resetFilter()">Reset</button>
+        <div class="filter-active-badge" id="filterBadge">Filter aktif</div>
+      </div>
+    </div>
+
+    <!-- BANNER -->
+    <div class="aturan-banner">
+      <strong>Kebijakan Bantuan:</strong> Setiap rumah ibadah hanya dapat menerima bantuan pembangunan atau renovasi <strong>satu kali dalam satu tahun anggaran</strong>. Pengajuan kedua dari RI yang sama pada tahun yang sama akan ditolak otomatis.
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card green">
+        <div class="stat-label">Total Rumah Ibadah Tercatat</div>
+        <div class="stat-val" id="statTotal">1.248</div>
+        <div class="stat-sub"><span class="badge-sm green" id="statTotalBadge">+12 bulan ini</span></div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Menunggu Verifikasi</div>
+        <div class="stat-val" id="statMenunggu">34</div>
+        <div class="stat-sub"><span class="badge-sm yellow">Perlu ditinjau</span></div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Sudah Dapat Bantuan</div>
+        <div class="stat-val" id="statBantuan">312</div>
+        <div class="stat-sub"><span class="badge-sm blue" id="statBantuanBadge">Tahun berjalan</span></div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Total Anggaran Dikeluarkan</div>
+        <div class="stat-val" style="font-size:20px;" id="statAnggaran">Rp 4,2 M</div>
+        <div class="stat-sub" id="statAnggaranSub">68% dari pagu Rp 6,2 M</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+
+      <!-- ===== PERTUMBUHAN RI — RICH SECTION ===== -->
+      <div class="chart-card pert-card">
+
+        <!-- Header -->
+        <div class="pert-header">
+          <div class="pert-header-left">
+            <div class="chart-title">Pertumbuhan Rumah Ibadah Terdaftar</div>
+            <div class="chart-sub" id="pertSub">Kumulatif per bulan &middot; Jan – Des 2024</div>
+          </div>
+        </div>
+
+        <!-- KPI STRIP -->
+        <div class="pert-kpi" id="pertKpi"></div>
+
+        <!-- CHART -->
+        <div class="pert-pane" id="paneChart">
+          <div class="linechart-wrap" id="pertWrap">
+            <svg class="linechart-canvas" id="svgPert" viewBox="0 0 560 190" preserveAspectRatio="none"></svg>
+            <div class="month-line" id="monthLine"></div>
+            <div class="chart-tooltip" id="tooltip"></div>
+          </div>
+          <div class="plegend-bar" id="pertLegend"></div>
+        </div>
+
+      </div><!-- /pert-card -->
+
+      <!-- BAR CHART: Distribusi Kecamatan -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Distribusi per Kecamatan</div>
+            <div class="chart-sub">Jumlah RI terdaftar saat ini</div>
+          </div>
+          <select class="chart-filter-select" id="filterKec" onchange="renderKec()">
+            <option value="semua">Semua Jenis</option>
+            <option value="masjid">Masjid</option>
+            <option value="mushola">Mushola</option>
+            <option value="gereja">Gereja</option>
+            <option value="pura">Pura</option>
+            <option value="klenteng">Klenteng</option>
+            <option value="vihara">Vihara</option>
+          </select>
+        </div>
+        <div id="barKec"></div>
+      </div>
+    </div>
+
+    <!-- PIE CHARTS -->
+    <div class="pie-charts-row">
+      <div class="pie-card">
+        <div class="chart-title">Komposisi Jenis Rumah Ibadah</div>
+        <div class="chart-sub">Total 1.248 rumah ibadah tercatat</div>
+        <div class="pie-body">
+          <svg id="svgJenis" width="130" height="130" viewBox="0 0 130 130" style="flex-shrink:0;"></svg>
+          <div class="pie-legend" id="legendJenis"></div>
+        </div>
+      </div>
+      <div class="pie-card">
+        <div class="chart-title">Status Pendaftaran Rumah Ibadah</div>
+        <div class="chart-sub">Pembagian berdasarkan status verifikasi</div>
+        <div class="pie-body">
+          <svg id="svgStatus" width="130" height="130" viewBox="0 0 130 130" style="flex-shrink:0;"></svg>
+          <div class="pie-legend" id="legendStatus"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANGGARAN -->
+    <div class="anggaran-card">
+      <div class="anggaran-header">
+        <div>
+          <div class="chart-title">Status Anggaran 2025</div>
+          <div class="chart-sub" style="margin-bottom:0;">Total pagu APBD: Rp 6.200.000.000</div>
+        </div>
+        <div class="anggaran-pct">68%</div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span>Bantuan Pembangunan Baru</span><span>Rp 2,1 M / Rp 3 M</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:70%;background:var(--green);"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="progress-label"><span>Bantuan Renovasi</span><span>Rp 2,1 M / Rp 3,2 M</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:65%;background:var(--accent);"></div></div>
+      </div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="table-row">
+      <div class="table-card">
+        <div class="table-card-header">
+          <div>
+            <div class="table-card-title">Rekapitulasi per Kecamatan</div>
+            <div class="table-card-sub">Anggaran yang telah dialokasikan 2025</div>
+          </div>
+          <a href="data-ri.html" class="table-card-link">Lihat semua</a>
+        </div>
+        <table>
+          <thead><tr><th>Kecamatan</th><th>Total RI</th><th>Total Anggaran</th></tr></thead>
+          <tbody>
+            <tr><td>Pancoran Mas</td><td>312</td><td>Rp 980 Jt</td></tr>
+            <tr><td>Sukmajaya</td><td>278</td><td>Rp 820 Jt</td></tr>
+            <tr><td>Sawangan</td><td>241</td><td>Rp 740 Jt</td></tr>
+            <tr><td>Beji</td><td>198</td><td>Rp 610 Jt</td></tr>
+            <tr><td>Cimanggis</td><td>140</td><td>Rp 430 Jt</td></tr>
+            <tr><td>Cipayung</td><td>79</td><td>Rp 240 Jt</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-card">
+        <div class="table-card-header">
+          <div>
+            <div class="table-card-title">Antrian Verifikasi Terkini</div>
+            <div class="table-card-sub">Perlu tindak lanjut segera</div>
+          </div>
+          <a href="verifikasi.html" class="table-card-link">Proses</a>
+        </div>
+        <table>
+          <thead><tr><th>Nama</th><th>Jenis</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Masjid Al-Ikhlas</td><td>Masjid</td><td><span class="dot dot-yellow"></span>Menunggu</td></tr>
+            <tr><td>GKI Anugrah</td><td>Gereja</td><td><span class="dot dot-yellow"></span>Menunggu</td></tr>
+            <tr><td>Vihara Cahaya</td><td>Vihara</td><td><span class="dot dot-yellow"></span>Menunggu</td></tr>
+            <tr><td>Masjid Baiturohim</td><td>Masjid</td><td><span class="dot dot-green"></span>Terdaftar</td></tr>
+            <tr><td>Pura Agung</td><td>Pura</td><td><span class="dot dot-red"></span>Belum Terdaftar</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const SERIES = [
+  { key:'masjid',   label:'Masjid',   color:'#1a6b4a', data:[420,424,428,433,437,441,446,450,454,457,460,463] },
+  { key:'mushola',  label:'Mushola',  color:'#2d8f63', data:[310,313,317,321,325,329,333,337,340,343,346,349] },
+  { key:'gereja',   label:'Gereja',   color:'#3a7bd5', data:[180,182,184,186,188,190,192,194,196,197,198,200] },
+  { key:'pura',     label:'Pura',     color:'#f0a500', data:[90,91,92,93,94,95,96,97,98,99,100,101] },
+  { key:'vihara',   label:'Vihara',   color:'#7c5cbf', data:[65,66,68,70,71,72,75,76,78,78,81,84] },
+  { key:'klenteng', label:'Klenteng', color:'#e05252', data:[45,46,46,47,47,48,48,49,49,50,50,51] },
+];
+const LABELS = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Ags','Sep','Okt','Nov','Des'];
+const DATES  = ['2024-01-15','2024-02-15','2024-03-15','2024-04-15','2024-05-15','2024-06-15',
+                 '2024-07-15','2024-08-15','2024-09-15','2024-10-15','2024-11-15','2024-12-15'];
+
+const KEC_LABELS = ['Pancoran Mas','Sukmajaya','Sawangan','Beji','Cimanggis','Tapos','Cilodong','Bojongsari','Cipayung','Cinere','Limo'];
+const KEC_DATA = {
+  semua:[312,278,241,198,140,124,112,98,79,68,54],
+  masjid:[118,105,92,75,53,47,43,37,30,26,21],
+  mushola:[87,78,68,58,40,35,31,27,22,19,15],
+  gereja:[52,46,40,33,23,20,18,16,12,10,8],
+  pura:[25,22,20,16,11,10,9,8,7,6,5],
+  klenteng:[13,11,9,7,5,4,4,3,3,3,2],
+  vihara:[17,16,12,9,8,8,7,7,5,4,3]
+};
+const JENIS_DATA = [
+  {label:'Masjid',val:463,color:'#1a6b4a'},{label:'Mushola',val:349,color:'#2d8f63'},
+  {label:'Gereja',val:200,color:'#3a7bd5'},{label:'Pura',val:101,color:'#f0a500'},
+  {label:'Vihara',val:84,color:'#7c5cbf'},{label:'Klenteng',val:51,color:'#e05252'},
+];
+const STATUS_DATA = [
+  {label:'Terdaftar',val:1180,color:'#1a6b4a'},
+  {label:'Menunggu Verifikasi',val:34,color:'#f0a500'},
+  {label:'Tidak Terdaftar',val:34,color:'#e05252'},
+];
+
+let hiddenKeys = new Set();
+let range = { from: 0, to: 11 };
+
+// ===== DATE FILTER =====
+function applyFilter() {
+  const f = new Date(document.getElementById('dateFrom').value);
+  const t = new Date(document.getElementById('dateTo').value);
+  if (isNaN(f) || isNaN(t) || f > t) return;
+  let fi = DATES.findIndex(d => new Date(d) >= f);
+  if (fi < 0) fi = 0;
+  let ti = 11;
+  for (let i = 11; i >= 0; i--) { if (new Date(DATES[i]) <= t) { ti = i; break; } }
+  range = { from: fi, to: ti };
+  document.getElementById('filterBadge').classList.add('show');
+  refreshAll();
+}
+function resetFilter() {
+  document.getElementById('dateFrom').value = '2024-01-01';
+  document.getElementById('dateTo').value = '2024-12-31';
+  range = { from: 0, to: 11 };
+  document.getElementById('filterBadge').classList.remove('show');
+  refreshAll();
+}
+function refreshAll() {
+  updateStatCards();
+  renderChart();
+}
+function updateStatCards() {
+  const { from, to } = range;
+  const total = SERIES.reduce((s, ser) => s + ser.data[to], 0);
+  const totalPrv = SERIES.reduce((s, ser) => s + ser.data[from], 0);
+  const delta = total - totalPrv;
+  document.getElementById('statTotal').textContent = total.toLocaleString('id-ID');
+  document.getElementById('statTotalBadge').textContent = (delta >= 0 ? '+' : '') + delta + ' periode ini';
+  document.getElementById('pertSub').textContent = `Kumulatif per bulan \u00B7 ${LABELS[from]} \u2013 ${LABELS[to]} 2024`;
+}
+
+// ===== LINE CHART (RICH) =====
+function getSlice(ser) { return ser.data.slice(range.from, range.to + 1); }
+
+function smoothPath(pts) {
+  if (pts.length < 2) return `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const cx = (pts[i-1][0] + pts[i][0]) / 2;
+    d += ` C${cx.toFixed(1)},${pts[i-1][1].toFixed(1)} ${cx.toFixed(1)},${pts[i][1].toFixed(1)} ${pts[i][0].toFixed(1)},${pts[i][1].toFixed(1)}`;
+  }
+  return d;
+}
+
+function renderKpi() {
+  const { from, to } = range;
+  const activeSeries = SERIES;
+  const totEnd  = activeSeries.reduce((s, ser) => s + ser.data[to], 0);
+  const totStart= activeSeries.reduce((s, ser) => s + ser.data[from], 0);
+  const delta   = totEnd - totStart;
+  const pct     = totStart > 0 ? ((delta / totStart) * 100).toFixed(1) : '0.0';
+  const months  = to - from + 1;
+  const avgAdd  = months > 1 ? (delta / (months - 1)).toFixed(1) : delta;
+  let maxDelta = 0, maxMonth = from;
+  for (let i = from + 1; i <= to; i++) {
+    const d = activeSeries.reduce((s, ser) => s + ser.data[i] - ser.data[i-1], 0);
+    if (d > maxDelta) { maxDelta = d; maxMonth = i; }
+  }
+
+  document.getElementById('pertKpi').innerHTML = `
+    <div class="pert-kpi-item">
+      <div class="pert-kpi-val">${totEnd.toLocaleString('id-ID')}</div>
+      <div class="pert-kpi-label">Akhir Periode</div>
+    </div>
+    <div class="pert-kpi-item" style="background:var(--green-light);">
+      <div class="pert-kpi-val up">+${delta.toLocaleString('id-ID')}</div>
+      <div class="pert-kpi-label">Pertumbuhan</div>
+      <div class="pert-kpi-badge up">▲ ${pct}%</div>
+    </div>
+    <div class="pert-kpi-item">
+      <div class="pert-kpi-val">${parseFloat(avgAdd) >= 0 ? '+' : ''}${parseFloat(avgAdd).toFixed(0)}</div>
+      <div class="pert-kpi-label">Rata-rata/bulan</div>
+    </div>
+    <div class="pert-kpi-item" style="background:var(--accent-soft);">
+      <div class="pert-kpi-val" style="color:var(--accent);font-size:14px;">${LABELS[maxMonth]}</div>
+      <div class="pert-kpi-label">Bulan Tertinggi</div>
+      <div class="pert-kpi-badge up">+${maxDelta}</div>
+    </div>
+  `;
+}
+
+function renderChart() {
+  const { from, to } = range;
+  const labels = LABELS.slice(from, to + 1);
+  const n = labels.length;
+
+  const activeSeries = SERIES;
+  const visibleSeries = activeSeries.filter(s => !hiddenKeys.has(s.key));
+  const drawSeries = visibleSeries.length ? visibleSeries : activeSeries;
+  const filterVal = 'semua';
+
+  renderKpi();
+  document.getElementById('pertSub').textContent = `Kumulatif per bulan · ${LABELS[from]} – ${LABELS[to]} 2024`;
+
+  const W=560, H=190, PL=44, PR=14, PT=12, PB=26;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const xPos = i => PL + (n > 1 ? (i / (n-1)) : 0.5) * cW;
+
+  const allVals = drawSeries.flatMap(s => getSlice(s));
+  let maxV = Math.max(...allVals);
+  let minV = Math.min(...allVals);
+  const pad = (maxV - minV) * 0.15 || 10;
+  maxV += pad; minV = Math.max(0, minV - pad);
+  const yPos = v => PT + cH - ((v - minV) / (maxV - minV)) * cH;
+
+  let svg = '<defs>';
+  // Gradients for each series
+  drawSeries.forEach(s => {
+    svg += `<linearGradient id="grad_${s.key}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${s.color}" stop-opacity="0.22"/>
+      <stop offset="85%" stop-color="${s.color}" stop-opacity="0.03"/>
+    </linearGradient>`;
+  });
+  svg += '</defs>';
+
+  // Grid lines
+  const ticks = 4;
+  for (let t = 0; t <= ticks; t++) {
+    const v = minV + (t / ticks) * (maxV - minV);
+    const y = yPos(v).toFixed(1);
+    const lbl = v >= 1000 ? (v/1000).toFixed(1)+'k' : Math.round(v).toString();
+    svg += `<line x1="${PL}" y1="${y}" x2="${W-PR}" y2="${y}" stroke="#e4e7ec" stroke-width="1" stroke-dasharray="3,4"/>`;
+    svg += `<text x="${PL-6}" y="${parseFloat(y)+4}" font-size="8" fill="#98a2b3" text-anchor="end" font-family="DM Sans">${lbl}</text>`;
+  }
+
+  // X labels
+  labels.forEach((lbl, i) => {
+    svg += `<text x="${xPos(i).toFixed(1)}" y="${H-4}" font-size="8" fill="#98a2b3" text-anchor="middle" font-family="DM Sans">${lbl}</text>`;
+  });
+
+  // For stacked area when "semua", show individual lines
+  // Draw areas first (back to front), then lines
+  const revDraw = [...drawSeries].reverse();
+  revDraw.forEach(s => {
+    const pts = getSlice(s).map((v, i) => [xPos(i), yPos(v)]);
+    const path = smoothPath(pts);
+    const fp = pts[0], lp = pts[pts.length-1];
+    svg += `<path d="${path} L${lp[0].toFixed(1)},${(H-PB).toFixed(1)} L${fp[0].toFixed(1)},${(H-PB).toFixed(1)} Z" fill="url(#grad_${s.key})"/>`;
+  });
+
+  drawSeries.forEach((s, si) => {
+    const slice = getSlice(s);
+    const pts = slice.map((v, i) => [xPos(i), yPos(v)]);
+    const path = smoothPath(pts);
+    const lw = drawSeries.length === 1 ? 2.5 : 2;
+    svg += `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="${lw}" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+    if (drawSeries.length === 1) {
+      // Show all dots for single series
+      pts.forEach((p, i) => {
+        const isLast = i === pts.length - 1;
+        if (isLast) {
+          svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="5" fill="white" stroke="${s.color}" stroke-width="2.5"/>`;
+          svg += `<text x="${p[0].toFixed(1)}" y="${(p[1]-10).toFixed(1)}" font-size="9" font-weight="700" fill="${s.color}" text-anchor="middle" font-family="Plus Jakarta Sans">${slice[i].toLocaleString('id-ID')}</text>`;
+        } else if (n <= 8) {
+          svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="${s.color}" opacity="0.65"/>`;
+        }
+      });
+    } else {
+      // Multi: dot at last point only
+      const lp = pts[pts.length-1];
+      svg += `<circle cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="4" fill="white" stroke="${s.color}" stroke-width="2"/>`;
+    }
+  });
+
+  // Hover bands
+  labels.forEach((_, i) => {
+    const x = xPos(i);
+    const bw = n > 1 ? cW / (n-1) : cW;
+    svg += `<rect class="hband" x="${(x-bw/2).toFixed(1)}" y="${PT}" width="${bw.toFixed(1)}" height="${cH}" fill="transparent" data-i="${i}" style="cursor:crosshair;"/>`;
+  });
+
+  document.getElementById('svgPert').innerHTML = svg;
+
+  // Legend
+  const legendEl = document.getElementById('pertLegend');
+  legendEl.style.display = 'flex';
+  legendEl.innerHTML = SERIES.map(s => `
+    <div class="plegend-chip ${hiddenKeys.has(s.key) ? 'dimmed' : ''}" onclick="toggleKey('${s.key}')">
+      <div class="plegend-chip-dot" style="background:${s.color};"></div>
+      <span class="plegend-chip-name">${s.label}</span>
+      <span class="plegend-chip-num">${s.data[range.to].toLocaleString('id-ID')}</span>
+    </div>`).join('');
+
+  setupHover(labels, activeSeries, drawSeries);
+}
+
+function toggleKey(key) {
+  if (hiddenKeys.has(key)) hiddenKeys.delete(key); else hiddenKeys.add(key);
+  renderChart();
+}
+
+function setupHover(labels, activeSeries, drawSeries) {
+  const svgEl   = document.getElementById('svgPert');
+  const tooltip = document.getElementById('tooltip');
+  const mlEl    = document.getElementById('monthLine');
+  const wrap    = document.getElementById('pertWrap');
+  const bands   = svgEl.querySelectorAll('.hband');
+  const W=560, PL=44, PR=14, cW=W-PL-PR;
+  const n = labels.length;
+
+  bands.forEach(band => {
+    band.addEventListener('mouseenter', () => {
+      const i = parseInt(band.getAttribute('data-i'));
+      const absIdx = range.from + i;
+      const svgRect  = svgEl.getBoundingClientRect();
+      const wrapRect = wrap.getBoundingClientRect();
+      const xFrac = n > 1 ? i / (n-1) : 0.5;
+      const xPx = (PL/W + xFrac * (cW/W)) * svgRect.width;
+
+      mlEl.style.left   = xPx + 'px';
+      mlEl.style.top    = '0';
+      mlEl.style.height = (svgRect.height - 26) + 'px';
+      mlEl.classList.add('show');
+
+      const shown = activeSeries.filter(s => !hiddenKeys.has(s.key));
+      let total = 0;
+      let rows = shown.map(s => {
+        const v = s.data[absIdx]; total += v;
+        const d = absIdx > 0 ? v - s.data[absIdx-1] : 0;
+        const dStr = d > 0 ? `<span style="color:#4ade80;font-size:10px;margin-left:2px;">+${d}</span>` : (d < 0 ? `<span style="color:#f87171;font-size:10px;margin-left:2px;">${d}</span>` : '');
+        return `<div class="tooltip-row">
+          <div class="tooltip-dot" style="background:${s.color};"></div>
+          <span class="tooltip-lbl">${s.label}</span>
+          <span class="tooltip-num">${v.toLocaleString('id-ID')}${dStr}</span>
+        </div>`;
+      }).join('');
+
+      if (shown.length > 1) {
+        const prevTotal = absIdx > 0 ? shown.reduce((s2, s) => s2 + s.data[absIdx-1], 0) : total;
+        const d = total - prevTotal;
+        rows += `<div class="tooltip-divider"></div>
+          <div class="tooltip-row">
+            <div class="tooltip-dot" style="background:white;border:1px solid rgba(255,255,255,0.3);"></div>
+            <span class="tooltip-lbl" style="font-weight:700;color:white;">Total</span>
+            <span class="tooltip-num">${total.toLocaleString('id-ID')}</span>
+          </div>`;
+        if (absIdx > 0) {
+          rows += `<div class="tooltip-row" style="margin-top:2px;">
+            <div class="tooltip-dot" style="background:transparent;"></div>
+            <span class="tooltip-lbl" style="color:rgba(255,255,255,0.4);">vs bulan lalu</span>
+            <span class="tooltip-num" style="color:${d>=0?'#4ade80':'#f87171'};">${d>=0?'+':''}${d.toLocaleString('id-ID')}</span>
+          </div>`;
+        }
+      }
+
+      tooltip.innerHTML = `<div class="tooltip-month">${labels[i]} 2024</div>${rows}`;
+      const tW = 180;
+      let left = xPx + 14;
+      if (left + tW > wrapRect.width - 8) left = xPx - tW - 14;
+      tooltip.style.left = Math.max(0, left) + 'px';
+      tooltip.style.top = '6px';
+      tooltip.classList.add('show');
+    });
+
+    band.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('show');
+      mlEl.classList.remove('show');
+    });
+  });
+}
+
+// ===== PER-KATEGORI TAB =====
+const KAT_ICONS = { masjid:'🕌', mushola:'🕌', gereja:'⛪', pura:'🛕', vihara:'🏯', klenteng:'🏮' };
+
+function makeSparkline(data, color, w=80, h=32) {
+  const n = data.length;
+  if (n < 2) return '';
+  const min = Math.min(...data), max = Math.max(...data);
+  const rx = i => (i / (n-1)) * w;
+  const ry = v => h - 2 - ((v - min) / (max - min + 0.01)) * (h - 4);
+  let pts = data.map((v, i) => [rx(i), ry(v)]);
+  let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const cx = (pts[i-1][0] + pts[i][0]) / 2;
+    d += ` C${cx.toFixed(1)},${pts[i-1][1].toFixed(1)} ${cx.toFixed(1)},${pts[i][1].toFixed(1)} ${pts[i][0].toFixed(1)},${pts[i][1].toFixed(1)}`;
+  }
+  const lp = pts[pts.length-1], fp = pts[0];
+  const area = `${d} L${lp[0].toFixed(1)},${h} L${fp[0].toFixed(1)},${h} Z`;
+  return `<svg viewBox="0 0 ${w} ${h}" class="kat-sparkline" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="spg_${color.replace('#','')}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#spg_${color.replace('#','')})"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${lp[0].toFixed(1)}" cy="${lp[1].toFixed(1)}" r="2.5" fill="${color}"/>
+  </svg>`;
+}
+
+function renderKategori() {
+  const { from, to } = range;
+  const maxVal = Math.max(...SERIES.map(s => s.data[to]));
+  const html = SERIES.map(s => {
+    const slice = s.data.slice(from, to + 1);
+    const val = s.data[to];
+    const start = s.data[from];
+    const delta = val - start;
+    const pct = start > 0 ? ((delta/start)*100).toFixed(1) : '0.0';
+    const barPct = Math.round((val / maxVal) * 100);
+    const upDown = delta >= 0 ? 'up' : 'down';
+    const arrow = delta >= 0 ? '▲' : '▼';
+    return `<div class="kat-card">
+      <div class="kat-top">
+        <div class="kat-name">${s.label.toUpperCase()}</div>
+        <div class="kat-icon">${KAT_ICONS[s.key] || '🏛️'}</div>
+      </div>
+      <div class="kat-val">${val.toLocaleString('id-ID')}</div>
+      <div class="kat-growth ${upDown}">${arrow} ${delta >= 0 ? '+' : ''}${delta} (${pct}%)</div>
+      ${makeSparkline(slice, s.color)}
+      <div class="kat-bar-track"><div class="kat-bar-fill" style="width:${barPct}%;background:${s.color};"></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('katGrid').innerHTML = html;
+}
+
+// ===== INSIGHT TAB =====
+function renderInsight() {
+  const { from, to } = range;
+
+  // Fastest growing jenis
+  const growthRates = SERIES.map(s => ({
+    s, rate: s.data[from] > 0 ? ((s.data[to] - s.data[from]) / s.data[from] * 100) : 0
+  })).sort((a,b) => b.rate - a.rate);
+  const fastest = growthRates[0];
+
+  // Month with highest total addition
+  let bestMonthDelta = 0, bestMonthIdx = from;
+  for (let i = from+1; i <= to; i++) {
+    const d = SERIES.reduce((sum, s) => sum + s.data[i] - s.data[i-1], 0);
+    if (d > bestMonthDelta) { bestMonthDelta = d; bestMonthIdx = i; }
+  }
+
+  // Most abundant type overall
+  const dominant = [...SERIES].sort((a,b) => b.data[to] - a.data[to])[0];
+
+  // Total growth
+  const totEnd = SERIES.reduce((s, ser) => s + ser.data[to], 0);
+  const totStart = SERIES.reduce((s, ser) => s + ser.data[from], 0);
+  const totalGrowth = totEnd - totStart;
+  const totalPct = totStart > 0 ? ((totalGrowth/totStart)*100).toFixed(1) : '0.0';
+
+  // Slowest growing
+  const slowest = growthRates[growthRates.length - 1];
+
+  const html = `
+    <div class="insight-card">
+      <div class="insight-icon green">🚀</div>
+      <div class="insight-body">
+        <div class="insight-title">Jenis RI dengan Pertumbuhan Tertinggi</div>
+        <div class="insight-desc">${fastest.s.label} tumbuh paling cepat dalam periode ini. Penambahan bersih sebanyak ${fastest.s.data[to] - fastest.s.data[from]} unit dari ${fastest.s.data[from].toLocaleString('id-ID')} menjadi ${fastest.s.data[to].toLocaleString('id-ID')}.</div>
+      </div>
+      <div class="insight-val green">+${fastest.rate.toFixed(1)}%</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon yellow">📅</div>
+      <div class="insight-body">
+        <div class="insight-title">Bulan dengan Penambahan Tertinggi</div>
+        <div class="insight-desc">${LABELS[bestMonthIdx]} 2024 mencatat penambahan RI terbanyak dalam satu bulan, dengan total +${bestMonthDelta} rumah ibadah baru terdaftar di seluruh jenis.</div>
+      </div>
+      <div class="insight-val yellow">+${bestMonthDelta}</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon blue">🏆</div>
+      <div class="insight-body">
+        <div class="insight-title">Jenis RI Paling Dominan</div>
+        <div class="insight-desc">${dominant.label} mendominasi dengan ${dominant.data[to].toLocaleString('id-ID')} unit terdaftar, mewakili ${((dominant.data[to]/totEnd)*100).toFixed(1)}% dari total rumah ibadah di Kota Depok.</div>
+      </div>
+      <div class="insight-val blue">${dominant.data[to].toLocaleString('id-ID')}</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-icon purple">📈</div>
+      <div class="insight-body">
+        <div class="insight-title">Total Pertumbuhan Keseluruhan</div>
+        <div class="insight-desc">Sepanjang periode ini, total rumah ibadah terdaftar bertambah ${totalGrowth.toLocaleString('id-ID')} unit — dari ${totStart.toLocaleString('id-ID')} menjadi ${totEnd.toLocaleString('id-ID')}.</div>
+      </div>
+      <div class="insight-val" style="color:#7c5cbf;">+${totalPct}%</div>
+    </div>
+  `;
+  document.getElementById('insightList').innerHTML = html;
+}
+
+
+// ===== BAR CHART: DISTRIBUSI KECAMATAN (horizontal) =====
+function renderKec() {
+  const jenis = document.getElementById('filterKec').value;
+  const data  = KEC_DATA[jenis];
+  const maxV  = Math.max(...data);
+  document.getElementById('barKec').innerHTML = KEC_LABELS.map((lbl, i) => {
+    const v = data[i];
+    const pct = Math.round((v / maxV) * 100);
+    const isTop = i === 0;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--gray-100);">
+      <div style="width:88px;font-size:11px;color:var(--gray-600);font-weight:500;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${lbl}">${lbl}</div>
+      <div style="flex:1;height:8px;background:var(--gray-100);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:${isTop ? 'var(--green)' : 'var(--green-mid)'};border-radius:4px;opacity:${isTop ? 1 : 0.7 + (0.3 * (1 - i/data.length))};"></div>
+      </div>
+      <div style="width:30px;text-align:right;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;color:var(--gray-700);flex-shrink:0;">${v}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== PIE CHART =====
+function renderPie(svgId, legendId, data) {
+  const svg    = document.getElementById(svgId);
+  const legend = document.getElementById(legendId);
+  const total  = data.reduce((s, d) => s + d.val, 0);
+  const cx=65, cy=65, r=56, ir=30;
+  let a = -Math.PI / 2, inner = '';
+  data.forEach(item => {
+    const da = (item.val/total) * Math.PI * 2;
+    const ea = a + da;
+    const lg = da > Math.PI ? 1 : 0;
+    const pts = [
+      [cx+ir*Math.cos(a), cy+ir*Math.sin(a)],
+      [cx+r*Math.cos(a),  cy+r*Math.sin(a)],
+      [cx+r*Math.cos(ea), cy+r*Math.sin(ea)],
+      [cx+ir*Math.cos(ea),cy+ir*Math.sin(ea)],
+    ];
+    inner += `<path d="M${pts[0][0].toFixed(2)},${pts[0][1].toFixed(2)} L${pts[1][0].toFixed(2)},${pts[1][1].toFixed(2)} A${r},${r} 0 ${lg},1 ${pts[2][0].toFixed(2)},${pts[2][1].toFixed(2)} L${pts[3][0].toFixed(2)},${pts[3][1].toFixed(2)} A${ir},${ir} 0 ${lg},0 ${pts[0][0].toFixed(2)},${pts[0][1].toFixed(2)} Z" fill="${item.color}" stroke="white" stroke-width="1.5" opacity="0.9"/>`;
+    a = ea;
+  });
+  inner += `<text x="${cx}" y="${cy-4}" font-size="14" font-weight="800" fill="#1d2939" text-anchor="middle" font-family="Plus Jakarta Sans">${total.toLocaleString('id-ID')}</text>`;
+  inner += `<text x="${cx}" y="${cy+12}" font-size="8" fill="#98a2b3" text-anchor="middle" font-family="DM Sans">Total</text>`;
+  svg.innerHTML = inner;
+  legend.innerHTML = data.map(item => {
+    const pct = ((item.val/total)*100).toFixed(1);
+    return `<div class="pie-legend-item">
+      <div class="pie-legend-dot" style="background:${item.color};"></div>
+      <span class="pie-legend-label">${item.label}</span>
+      <span class="pie-legend-val">${item.val.toLocaleString('id-ID')}</span>
+      <span class="pie-legend-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+}
+
+// ===== USER MENU =====
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+function logout() {
+  document.getElementById('userDropdown').classList.remove('open');
+  window.location.href = 'login.html';
+}
+document.addEventListener('click', function() {
+  document.getElementById('userDropdown').classList.remove('open');
+});
+
+// ===== INIT =====
+renderChart();
+renderKec();
+renderPie('svgJenis','legendJenis', JENIS_DATA);
+renderPie('svgStatus','legendStatus', STATUS_DATA);
+</script>
+</body>
+</html>

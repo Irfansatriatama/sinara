@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Verifikasi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/global.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-600); }
+
+/* ===== PAGE SWITCHER ===== */
+.page-switcher { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #0f1923; padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 6px; overflow-x: auto; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-switcher > span { font-size: 10px; color: #98a2b3; font-weight: 700; margin-right: 8px; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+.page-switcher a { text-decoration: none; flex-shrink: 0; }
+.tab-btn { padding: 5px 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+.tab-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+.tab-btn.active { background: var(--green); color: white; border-color: var(--green); }
+.ps-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); flex-shrink: 0; margin: 0 4px; }
+
+/* ===== LAYOUT ===== */
+.pemda-layout { display: flex; min-height: 100vh; padding-top: 44px; }
+.sidebar { width: 220px; background: var(--gray-800); color: white; display: flex; flex-direction: column; position: fixed; top: 44px; left: 0; bottom: 0; z-index: 100; }
+.sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo .logo-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+.sidebar-logo .logo-sub { font-size: 10px; opacity: 0.45; margin-top: 3px; }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: var(--green); color: white; font-weight: 700; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 700; color: white; }
+.sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+/* ===== USER ACTION MENU ===== */
+.sidebar-user-wrap { position: relative; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; }
+.btn-user-menu {
+  margin-left: auto; flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: transparent; border: none;
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.btn-user-menu:hover { background: rgba(255,255,255,0.1); }
+.btn-user-menu svg { display: block; }
+.user-dropdown {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: #263244; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+.user-dropdown.open { display: block; }
+a.user-dropdown-item { text-decoration: none; }
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.75); cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.user-dropdown-item:last-child { border-bottom: none; }
+.user-dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.user-dropdown-item.danger { color: #f87171; }
+.user-dropdown-item.danger:hover { background: rgba(248,113,113,0.1); }
+.user-dropdown-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+.main-content { margin-left: 220px; flex: 1; background: var(--gray-100); padding: 28px; min-height: calc(100vh - 44px); }
+.breadcrumb { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+.breadcrumb span { color: var(--gray-600); }
+.page-header { margin-bottom: 22px; }
+.page-header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 3px; }
+.page-header p { font-size: 13px; color: var(--gray-400); }
+
+/* ===== TAB NAV ===== */
+.tab-nav { display: flex; background: white; border: 1px solid var(--gray-200); border-radius: 10px; padding: 5px; margin-bottom: 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); width: fit-content; gap: 4px; }
+.tab-btn-nav { display: flex; align-items: center; gap: 8px; padding: 9px 18px; border-radius: 7px; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--gray-400); cursor: pointer; transition: all 0.15s; font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
+.tab-btn-nav:hover { color: var(--gray-700); background: var(--gray-50); }
+.tab-btn-nav.active { background: var(--green); color: white; }
+.tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; border-radius: 9px; font-size: 10px; font-weight: 700; padding: 0 5px; }
+.tab-btn-nav.active .tab-badge { background: rgba(255,255,255,0.25); color: white; }
+.tab-btn-nav:not(.active) .tab-badge { background: var(--accent-soft); color: #a16207; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== INFO BANNERS ===== */
+.alur-info { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #2558b0; line-height: 1.5; }
+.alur-info strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.alur-steps { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.as-item { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+.as-item.done { background: var(--green-light); color: var(--green); }
+.as-item.current { background: var(--accent-soft); color: #a16207; border: 1px solid #f0c050; }
+.as-item.next { background: var(--gray-100); color: var(--gray-400); }
+.as-arrow { color: var(--gray-300); font-size: 11px; flex-shrink: 0; }
+
+.aturan-banner { background: var(--accent-soft); border: 1px solid #f0c050; border-radius: 10px; padding: 11px 14px; margin-bottom: 18px; font-size: 12px; color: #a16207; line-height: 1.5; }
+.aturan-banner strong { font-weight: 700; }
+
+/* ===== STAT ROW ===== */
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: white; border-radius: 10px; border: 1px solid var(--gray-200); padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border-left: 3px solid transparent; }
+.stat-card.yellow { border-left-color: var(--accent); }
+.stat-card.green { border-left-color: var(--green); }
+.stat-card.red { border-left-color: var(--red); }
+.stat-card.blue { border-left-color: var(--blue); }
+.stat-label { font-size: 11px; color: var(--gray-400); font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+.stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); }
+
+/* ===== CARD LIST ===== */
+.card-list { display: flex; flex-direction: column; gap: 12px; }
+
+/* ===== VERI CARD (Pendaftaran RI) ===== */
+.veri-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); box-shadow: 0 1px 4px rgba(0,0,0,0.04); overflow: hidden; transition: box-shadow 0.15s; }
+.veri-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.veri-card-main { padding: 16px 18px; display: flex; align-items: flex-start; gap: 14px; }
+.veri-num { width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); border: 2px solid #f0c050; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #a16207; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.veri-info { flex: 1; min-width: 0; }
+.veri-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 5px; }
+.veri-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.veri-meta-item { font-size: 12px; color: var(--gray-500); }
+.mi-label { color: var(--gray-400); }
+.veri-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+.badge-yellow { background: var(--accent-soft); color: #a16207; border: 1px solid #f0c050; }
+.badge-green { background: var(--green-light); color: var(--green); border: 1px solid #a5d6bc; }
+.badge-red { background: var(--red-soft); color: var(--red); border: 1px solid #f5b5b5; }
+.badge-blue { background: var(--blue-soft); color: var(--blue); border: 1px solid #b3c9f5; }
+.badge-gray { background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--gray-200); }
+.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-yellow { background: var(--accent); }
+.dot-green { background: var(--green); }
+.dot-red { background: var(--red); }
+.dot-blue { background: var(--blue); }
+
+.veri-data-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--gray-100); border-bottom: 1px solid var(--gray-100); }
+.veri-data-item { padding: 10px 18px; border-right: 1px solid var(--gray-100); }
+.veri-data-item:last-child { border-right: none; }
+.vdi-label { font-size: 10px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.vdi-val { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+
+.veri-card-footer { padding: 10px 18px; border-top: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--gray-50); }
+.footer-info { font-size: 11px; color: var(--gray-400); }
+.veri-actions { display: flex; gap: 7px; }
+.btn-detail { padding: 7px 13px; border-radius: 7px; border: 1.5px solid var(--gray-200); background: white; font-size: 12px; font-weight: 600; color: var(--gray-600); cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+.btn-detail:hover { border-color: var(--gray-400); }
+.btn-approve { padding: 7px 14px; border-radius: 7px; border: none; background: var(--green); color: white; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+.btn-approve:hover { background: var(--green-mid); }
+.btn-reject { padding: 7px 13px; border-radius: 7px; border: 1.5px solid var(--red); background: white; color: var(--red); font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+.btn-reject:hover { background: var(--red-soft); }
+.btn-blue { padding: 7px 14px; border-radius: 7px; border: none; background: var(--blue); color: white; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+.btn-blue:hover { background: #2d6bc0; }
+.btn-gold { padding: 7px 14px; border-radius: 7px; border: none; background: var(--accent); color: white; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* ===== PENG CARD ===== */
+.peng-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); box-shadow: 0 1px 4px rgba(0,0,0,0.04); overflow: hidden; transition: box-shadow 0.15s; }
+.peng-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.peng-card-header { padding: 14px 18px; display: flex; align-items: flex-start; gap: 14px; border-bottom: 1px solid var(--gray-100); }
+.peng-num { width: 36px; height: 36px; border-radius: 50%; background: var(--blue-soft); border: 2px solid #b3c9f5; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--blue); font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.peng-top { flex: 1; min-width: 0; }
+.peng-ri-name { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 2px; }
+.peng-nomor { font-size: 11px; color: var(--gray-400); margin-bottom: 7px; letter-spacing: 0.3px; }
+.peng-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.peng-data-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+.peng-data-item { padding: 10px 16px; border-right: 1px solid var(--gray-100); border-top: 1px solid var(--gray-100); }
+.peng-data-item:last-child { border-right: none; }
+.pdi-label { font-size: 10px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 3px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.pdi-val { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+.peng-docs { padding: 10px 18px; border-top: 1px solid var(--gray-100); display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+.doc-label { font-size: 10px; color: var(--gray-400); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0; }
+.doc-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 6px; font-size: 11px; color: var(--gray-600); font-weight: 600; cursor: pointer; transition: all 0.15s; }
+.doc-chip:hover { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+
+/* ===== PIPELINE ===== */
+.pipeline { display: flex; align-items: center; padding: 12px 18px; border-top: 1px solid var(--gray-100); background: var(--gray-50); overflow-x: auto; gap: 0; }
+.ps-step { display: flex; align-items: center; flex-shrink: 0; }
+.ps-dot { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.ps-dot.done { background: var(--green-light); color: var(--green); border: 2px solid var(--green); }
+.ps-dot.current { background: var(--accent-soft); color: #a16207; border: 2px solid var(--accent); }
+.ps-dot.pending { background: var(--gray-100); color: var(--gray-300); border: 2px solid var(--gray-200); }
+.ps-label { font-size: 10px; font-weight: 600; margin-left: 5px; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; }
+.ps-label.done { color: var(--green); }
+.ps-label.current { color: #a16207; }
+.ps-label.pending { color: var(--gray-300); }
+.ps-line { height: 2px; width: 20px; flex-shrink: 0; margin: 0 4px; }
+.ps-line.done { background: var(--green); }
+.ps-line.pending { background: var(--gray-200); }
+
+/* ===== TAHAP DETAIL (info survei/anggaran/pencairan) ===== */
+.tahap-detail { padding: 10px 18px; border-top: 1px solid var(--gray-100); }
+.tahap-detail.survei { background: #f0f7ff; }
+.tahap-detail.anggaran { background: #f0faf4; }
+.tahap-detail.pencairan { background: #fffbf0; }
+.tahap-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.tahap-detail.survei .tahap-label { color: var(--blue); }
+.tahap-detail.anggaran .tahap-label { color: var(--green); }
+.tahap-detail.pencairan .tahap-label { color: #a16207; }
+.tahap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tahap-item label { font-size: 10px; color: var(--gray-400); font-weight: 600; display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.tahap-item span { font-size: 12px; font-weight: 600; color: var(--gray-800); }
+
+.peng-card-footer { padding: 10px 18px; border-top: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.peng-footer-info { font-size: 11px; color: var(--gray-400); }
+.peng-actions { display: flex; gap: 7px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 50px 24px; text-align: center; }
+.empty-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: var(--gray-600); margin-bottom: 6px; }
+.empty-desc { font-size: 13px; color: var(--gray-400); }
+
+/* ===== MODAL ===== */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; }
+.modal-header { padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.modal-header.green { background: var(--green); }
+.modal-header.red { background: var(--red); }
+.modal-header.blue { background: var(--blue); }
+.modal-header.gold { background: var(--accent); }
+.modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: white; }
+.modal-sub { font-size: 11px; color: rgba(255,255,255,0.72); margin-top: 2px; }
+.modal-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 20px; overflow-y: auto; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid var(--gray-100); display: flex; gap: 8px; justify-content: flex-end; flex-shrink: 0; }
+.detail-section { margin-bottom: 18px; }
+.detail-section:last-child { margin-bottom: 0; }
+.detail-section-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 7px; border-bottom: 1px solid var(--gray-100); }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.detail-label { font-size: 11px; color: var(--gray-400); font-weight: 600; margin-bottom: 2px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.detail-val { font-size: 13px; color: var(--gray-800); font-weight: 600; line-height: 1.4; }
+.form-row { margin-bottom: 14px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.form-input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); outline: none; transition: all 0.15s; box-sizing: border-box; background: white; }
+.form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+textarea.form-input { resize: vertical; min-height: 80px; line-height: 1.5; }
+.form-hint { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.btn-primary { background: var(--green); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-danger { background: var(--red); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+.btn-secondary { background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+.info-box { border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 13px; line-height: 1.5; }
+.info-box.green { background: var(--green-light); border: 1px solid #a5d6bc; color: var(--green); }
+.info-box.red { background: var(--red-soft); border: 1px solid #f5b5b5; color: var(--red); }
+.info-box strong { display: block; margin-bottom: 3px; font-size: 13px; }
+
+/* ===== TOAST ===== */
+.toast { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--gray-800); color: white; padding: 11px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999; white-space: nowrap; align-items: center; gap: 8px; }
+.toast.show { display: flex; }
+.toast.success { background: var(--green); }
+.toast.reject { background: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- WIREFRAME NAV -->
+<div class="page-switcher">
+  <span>Wireframe</span>
+</div>
+
+<div class="pemda-layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-brand">SINARA</div>
+      <div class="logo-sub">Kota Depok · 2025</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="dashboard.html">Dashboard</a>
+      <a class="nav-item" href="data-ri.html">Data Rumah Ibadah</a>
+      <a class="nav-item active" href="verifikasi.html">Verifikasi <span class="nav-badge">7</span></a>
+      <a class="nav-item" href="anggaran.html">Anggaran</a>
+      <a class="nav-item" href="laporan.html">Laporan</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user-wrap">
+        <div class="user-dropdown" id="userDropdown">
+          <a class="user-dropdown-item" href="profil.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 13c0-2.5 2.7-4 6-4s6 1.5 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Profil Saya
+          </a>
+          <a class="user-dropdown-item" href="ganti-password.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Ganti Password
+          </a>
+          <div class="user-dropdown-item danger" onclick="logout()">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Keluar
+          </div>
+        </div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">BD</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sidebar-user-name">Budi Darma</div>
+            <div class="sidebar-user-role">Admin Pemkot</div>
+          </div>
+          <button class="btn-user-menu" id="btnUserMenu" onclick="toggleUserMenu(event)" title="Menu akun">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="3" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="8" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="13" r="1.2" fill="rgba(255,255,255,0.6)"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-content">
+    <div class="breadcrumb">Dashboard <span>/ Verifikasi</span></div>
+    <div class="page-header">
+      <h1>Antrian Verifikasi</h1>
+      <p>Kelola verifikasi pendaftaran rumah ibadah dan pengajuan bantuan secara berurutan.</p>
+    </div>
+
+    <div class="tab-nav">
+      <button class="tab-btn-nav active" onclick="switchTab('ri')">
+        Pendaftaran RI <span class="tab-badge">4</span>
+      </button>
+      <button class="tab-btn-nav" onclick="switchTab('bantuan')">
+        Pengajuan Bantuan <span class="tab-badge">5</span>
+      </button>
+    </div>
+
+    <!-- =======================================
+         TAB 1: VERIFIKASI PENDAFTARAN RI
+         ======================================= -->
+    <div class="tab-content active" id="tab-ri">
+
+      <div class="alur-info">
+        <strong>Alur Verifikasi Pendaftaran Rumah Ibadah</strong>
+        <div class="alur-steps">
+          <div class="as-item done">1. Daftar Akun</div><div class="as-arrow">→</div>
+          <div class="as-item done">2. Isi Data RI</div><div class="as-arrow">→</div>
+          <div class="as-item current">3. Verifikasi Pemkot Depok ← Anda di sini</div><div class="as-arrow">→</div>
+          <div class="as-item next">4. Disetujui / Ditolak</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card yellow"><div class="stat-label">Menunggu Verifikasi</div><div class="stat-val">4</div></div>
+        <div class="stat-card green"><div class="stat-label">Disetujui Bulan Ini</div><div class="stat-val">12</div></div>
+        <div class="stat-card red"><div class="stat-label">Ditolak Bulan Ini</div><div class="stat-val">2</div></div>
+      </div>
+
+      <div class="card-list" id="ri-card-list">
+
+        <div class="veri-card" id="ri-card-1">
+          <div class="veri-card-main">
+            <div class="veri-num">1</div>
+            <div class="veri-info">
+              <div class="veri-name">Mushola Al-Hikmah</div>
+              <div class="veri-meta">
+                <span class="veri-meta-item"><span class="mi-label">Pengurus:</span> Hj. Nurjanah</span>
+                <span class="veri-meta-item"><span class="mi-label">Dikirim:</span> 14 Mei 2025</span>
+                <span class="veri-meta-item"><span class="mi-label">Kontak:</span> 081234567890</span>
+              </div>
+              <div class="veri-tags">
+                <span class="badge badge-gray">Mushola</span>
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Menunggu Verifikasi</span>
+                <span class="badge badge-red">Kritis</span>
+              </div>
+            </div>
+          </div>
+          <div class="veri-data-grid">
+            <div class="veri-data-item"><div class="vdi-label">Kecamatan</div><div class="vdi-val">Sawangan</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Kelurahan</div><div class="vdi-val">Kedaung</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Tahun Berdiri</div><div class="vdi-val">1998</div></div>
+          </div>
+          <div class="veri-card-footer">
+            <div class="footer-info">Menunggu selama <strong>5 hari</strong></div>
+            <div class="veri-actions">
+              <button class="btn-detail" onclick="openDetailRI(1)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectRI(1,'Mushola Al-Hikmah')">Tolak</button>
+              <button class="btn-approve" onclick="openApproveRI(1,'Mushola Al-Hikmah')">Setujui</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="veri-card" id="ri-card-2">
+          <div class="veri-card-main">
+            <div class="veri-num">2</div>
+            <div class="veri-info">
+              <div class="veri-name">Pura Parahyangan Asri</div>
+              <div class="veri-meta">
+                <span class="veri-meta-item"><span class="mi-label">Pengurus:</span> I Wayan Suartha</span>
+                <span class="veri-meta-item"><span class="mi-label">Dikirim:</span> 12 Mei 2025</span>
+                <span class="veri-meta-item"><span class="mi-label">Kontak:</span> 082345678901</span>
+              </div>
+              <div class="veri-tags">
+                <span class="badge badge-yellow">Pura</span>
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Menunggu Verifikasi</span>
+                <span class="badge badge-yellow">Perlu Renovasi</span>
+              </div>
+            </div>
+          </div>
+          <div class="veri-data-grid">
+            <div class="veri-data-item"><div class="vdi-label">Kecamatan</div><div class="vdi-val">Beji</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Kelurahan</div><div class="vdi-val">Beji Timur</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Tahun Berdiri</div><div class="vdi-val">1975</div></div>
+          </div>
+          <div class="veri-card-footer">
+            <div class="footer-info">Menunggu selama <strong>7 hari</strong></div>
+            <div class="veri-actions">
+              <button class="btn-detail" onclick="openDetailRI(2)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectRI(2,'Pura Parahyangan Asri')">Tolak</button>
+              <button class="btn-approve" onclick="openApproveRI(2,'Pura Parahyangan Asri')">Setujui</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="veri-card" id="ri-card-3">
+          <div class="veri-card-main">
+            <div class="veri-num">3</div>
+            <div class="veri-info">
+              <div class="veri-name">Mushola Nurul Iman</div>
+              <div class="veri-meta">
+                <span class="veri-meta-item"><span class="mi-label">Pengurus:</span> Bapak Supardi</span>
+                <span class="veri-meta-item"><span class="mi-label">Dikirim:</span> 10 Mei 2025</span>
+                <span class="veri-meta-item"><span class="mi-label">Kontak:</span> 083456789012</span>
+              </div>
+              <div class="veri-tags">
+                <span class="badge badge-gray">Mushola</span>
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Menunggu Verifikasi</span>
+                <span class="badge badge-red">Kritis</span>
+              </div>
+            </div>
+          </div>
+          <div class="veri-data-grid">
+            <div class="veri-data-item"><div class="vdi-label">Kecamatan</div><div class="vdi-val">Sukmajaya</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Kelurahan</div><div class="vdi-val">Abadijaya</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Tahun Berdiri</div><div class="vdi-val">2003</div></div>
+          </div>
+          <div class="veri-card-footer">
+            <div class="footer-info">Menunggu selama <strong>9 hari</strong></div>
+            <div class="veri-actions">
+              <button class="btn-detail" onclick="openDetailRI(3)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectRI(3,'Mushola Nurul Iman')">Tolak</button>
+              <button class="btn-approve" onclick="openApproveRI(3,'Mushola Nurul Iman')">Setujui</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="veri-card" id="ri-card-4">
+          <div class="veri-card-main">
+            <div class="veri-num">4</div>
+            <div class="veri-info">
+              <div class="veri-name">Masjid Al-Barokah</div>
+              <div class="veri-meta">
+                <span class="veri-meta-item"><span class="mi-label">Pengurus:</span> Ust. Ridwan</span>
+                <span class="veri-meta-item"><span class="mi-label">Dikirim:</span> 8 Mei 2025</span>
+                <span class="veri-meta-item"><span class="mi-label">Kontak:</span> 084567890123</span>
+              </div>
+              <div class="veri-tags">
+                <span class="badge badge-green">Masjid</span>
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Menunggu Verifikasi</span>
+                <span class="badge badge-yellow">Perlu Renovasi</span>
+              </div>
+            </div>
+          </div>
+          <div class="veri-data-grid">
+            <div class="veri-data-item"><div class="vdi-label">Kecamatan</div><div class="vdi-val">Cipayung</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Kelurahan</div><div class="vdi-val">Kedung Badak</div></div>
+            <div class="veri-data-item"><div class="vdi-label">Tahun Berdiri</div><div class="vdi-val">1990</div></div>
+          </div>
+          <div class="veri-card-footer">
+            <div class="footer-info">Menunggu selama <strong>11 hari</strong></div>
+            <div class="veri-actions">
+              <button class="btn-detail" onclick="openDetailRI(4)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectRI(4,'Masjid Al-Barokah')">Tolak</button>
+              <button class="btn-approve" onclick="openApproveRI(4,'Masjid Al-Barokah')">Setujui</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /tab-ri -->
+
+
+    <!-- =======================================
+         TAB 2: PENGAJUAN BANTUAN
+         Pipeline 5 tahap lengkap:
+         1. Pengajuan Dikirim
+         2. Verifikasi Dokumen
+         3. Survei Lapangan
+         4. Persetujuan Anggaran
+         5. Pencairan Dana
+         ======================================= -->
+    <div class="tab-content" id="tab-bantuan">
+
+      <div class="aturan-banner">
+        <strong>Aturan 1 Kali Setahun:</strong> Setiap rumah ibadah hanya dapat menerima satu bantuan (pembangunan atau renovasi) dalam satu tahun anggaran. Pengajuan dari RI yang sudah menerima bantuan di tahun yang sama akan ditolak otomatis.
+      </div>
+
+      <div class="alur-info">
+        <strong>Pipeline Verifikasi Pengajuan Bantuan — 5 Tahap Berurutan</strong>
+        <div class="alur-steps">
+          <div class="as-item done">1. Dikirim</div><div class="as-arrow">→</div>
+          <div class="as-item next">2. Verifikasi Dokumen</div><div class="as-arrow">→</div>
+          <div class="as-item next">3. Survei Lapangan</div><div class="as-arrow">→</div>
+          <div class="as-item next">4. Persetujuan Anggaran</div><div class="as-arrow">→</div>
+          <div class="as-item next">5. Pencairan Dana</div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-card yellow"><div class="stat-label">Verifikasi Dokumen</div><div class="stat-val">2</div></div>
+        <div class="stat-card blue"><div class="stat-label">Survei Lapangan</div><div class="stat-val">1</div></div>
+        <div class="stat-card green"><div class="stat-label">Persetujuan Anggaran</div><div class="stat-val">1</div></div>
+      </div>
+      <div class="stat-row" style="margin-top:-8px;">
+        <div class="stat-card" style="border-left:3px solid var(--accent);"><div class="stat-label">Menunggu Pencairan</div><div class="stat-val">1</div></div>
+        <div class="stat-card green"><div class="stat-label">Selesai Dicairkan 2025</div><div class="stat-val">5</div></div>
+        <div class="stat-card red"><div class="stat-label">Ditolak 2025</div><div class="stat-val">2</div></div>
+      </div>
+
+      <div class="card-list" id="bantuan-card-list">
+
+        <!-- ===== CARD: Tahap 2 — Verifikasi Dokumen ===== -->
+        <div class="peng-card" id="peng-card-1">
+          <div class="peng-card-header">
+            <div class="peng-num">1</div>
+            <div class="peng-top">
+              <div class="peng-ri-name">Mushola Al-Hikmah</div>
+              <div class="peng-nomor">No. SINARA/2025/BNT/3847</div>
+              <div class="peng-tags">
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Verifikasi Dokumen</span>
+                <span class="badge badge-blue">Pembangunan</span>
+                <span class="badge badge-red">Kritis</span>
+              </div>
+            </div>
+          </div>
+          <div class="peng-data-grid">
+            <div class="peng-data-item"><div class="pdi-label">Kecamatan</div><div class="pdi-val">Sawangan</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Estimasi Biaya</div><div class="pdi-val">Rp 200.000.000</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Tgl Pengajuan</div><div class="pdi-val">14 Mei 2025</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Rencana Mulai</div><div class="pdi-val">1 Jul 2025</div></div>
+          </div>
+          <div class="peng-docs">
+            <span class="doc-label">Dokumen:</span>
+            <span class="doc-chip">Proposal Permohonan.pdf</span>
+            <span class="doc-chip">RAB.pdf</span>
+            <span class="doc-chip">Sertifikat Tanah.pdf</span>
+          </div>
+          <div class="pipeline">
+            <div class="ps-step"><div class="ps-dot done">1</div><div class="ps-label done">Dikirim</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot current">2</div><div class="ps-label current">Verifikasi Dokumen</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">3</div><div class="ps-label pending">Survei Lapangan</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">4</div><div class="ps-label pending">Persetujuan Anggaran</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">5</div><div class="ps-label pending">Pencairan Dana</div></div>
+          </div>
+          <div class="peng-card-footer">
+            <div class="peng-footer-info">Menunggu verifikasi dokumen selama <strong>5 hari</strong></div>
+            <div class="peng-actions">
+              <button class="btn-detail" onclick="openDetailPengajuan(1)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectPengajuan(1,'Mushola Al-Hikmah')">Tolak</button>
+              <button class="btn-blue" onclick="openApprovePengajuan(1,'Mushola Al-Hikmah','survei')">Lanjutkan ke Survei</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CARD: Tahap 2 — Verifikasi Dokumen ===== -->
+        <div class="peng-card" id="peng-card-2">
+          <div class="peng-card-header">
+            <div class="peng-num">2</div>
+            <div class="peng-top">
+              <div class="peng-ri-name">Pura Parahyangan Asri</div>
+              <div class="peng-nomor">No. SINARA/2025/BNT/3821</div>
+              <div class="peng-tags">
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Verifikasi Dokumen</span>
+                <span class="badge badge-yellow">Renovasi</span>
+                <span class="badge badge-yellow">Perlu Renovasi</span>
+              </div>
+            </div>
+          </div>
+          <div class="peng-data-grid">
+            <div class="peng-data-item"><div class="pdi-label">Kecamatan</div><div class="pdi-val">Beji</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Estimasi Biaya</div><div class="pdi-val">Rp 90.000.000</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Tgl Pengajuan</div><div class="pdi-val">12 Mei 2025</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Rencana Mulai</div><div class="pdi-val">15 Jul 2025</div></div>
+          </div>
+          <div class="peng-docs">
+            <span class="doc-label">Dokumen:</span>
+            <span class="doc-chip">Proposal Permohonan.pdf</span>
+            <span class="doc-chip">Sertifikat Tanah.pdf</span>
+          </div>
+          <div class="pipeline">
+            <div class="ps-step"><div class="ps-dot done">1</div><div class="ps-label done">Dikirim</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot current">2</div><div class="ps-label current">Verifikasi Dokumen</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">3</div><div class="ps-label pending">Survei Lapangan</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">4</div><div class="ps-label pending">Persetujuan Anggaran</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">5</div><div class="ps-label pending">Pencairan Dana</div></div>
+          </div>
+          <div class="peng-card-footer">
+            <div class="peng-footer-info">Menunggu verifikasi dokumen selama <strong>7 hari</strong></div>
+            <div class="peng-actions">
+              <button class="btn-detail" onclick="openDetailPengajuan(2)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectPengajuan(2,'Pura Parahyangan Asri')">Tolak</button>
+              <button class="btn-blue" onclick="openApprovePengajuan(2,'Pura Parahyangan Asri','survei')">Lanjutkan ke Survei</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CARD: Tahap 3 — Survei Lapangan ===== -->
+        <div class="peng-card" id="peng-card-3">
+          <div class="peng-card-header">
+            <div class="peng-num" style="background:var(--blue-soft);border-color:#b3c9f5;color:var(--blue);">3</div>
+            <div class="peng-top">
+              <div class="peng-ri-name">Masjid Ar-Rahman</div>
+              <div class="peng-nomor">No. SINARA/2025/BNT/3756</div>
+              <div class="peng-tags">
+                <span class="badge badge-blue"><span class="dot dot-blue"></span> Survei Lapangan</span>
+                <span class="badge badge-blue">Pembangunan</span>
+                <span class="badge badge-yellow">Perlu Renovasi</span>
+              </div>
+            </div>
+          </div>
+          <div class="peng-data-grid">
+            <div class="peng-data-item"><div class="pdi-label">Kecamatan</div><div class="pdi-val">Sukmajaya</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Estimasi Biaya</div><div class="pdi-val">Rp 250.000.000</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Tgl Pengajuan</div><div class="pdi-val">1 Mei 2025</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Rencana Mulai</div><div class="pdi-val">1 Agu 2025</div></div>
+          </div>
+          <div class="peng-docs">
+            <span class="doc-label">Dokumen:</span>
+            <span class="doc-chip">Proposal Permohonan.pdf</span>
+            <span class="doc-chip">RAB.pdf</span>
+            <span class="doc-chip">IMB.pdf</span>
+            <span class="doc-chip">Sertifikat Tanah.pdf</span>
+          </div>
+          <!-- INFO SURVEI -->
+          <div class="tahap-detail survei">
+            <div class="tahap-label">Detail Survei Lapangan</div>
+            <div class="tahap-grid">
+              <div class="tahap-item"><label>Jadwal Kunjungan</label><span>18 Mei 2025</span></div>
+              <div class="tahap-item"><label>Petugas Survei</label><span>Ahmad Rizki, S.T.</span></div>
+              <div class="tahap-item"><label>Status</label><span>Kunjungan selesai</span></div>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="ps-step"><div class="ps-dot done">1</div><div class="ps-label done">Dikirim</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">2</div><div class="ps-label done">Verifikasi Dokumen</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot current">3</div><div class="ps-label current">Survei Lapangan</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">4</div><div class="ps-label pending">Persetujuan Anggaran</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">5</div><div class="ps-label pending">Pencairan Dana</div></div>
+          </div>
+          <div class="peng-card-footer">
+            <div class="peng-footer-info">Survei lapangan selesai dilakukan pada 18 Mei 2025</div>
+            <div class="peng-actions">
+              <button class="btn-detail" onclick="openDetailPengajuan(3)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectPengajuan(3,'Masjid Ar-Rahman')">Tolak</button>
+              <button class="btn-approve" onclick="openApprovePengajuan(3,'Masjid Ar-Rahman','anggaran')">Lanjutkan ke Persetujuan Anggaran</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CARD: Tahap 4 — Persetujuan Anggaran ===== -->
+        <div class="peng-card" id="peng-card-4">
+          <div class="peng-card-header">
+            <div class="peng-num" style="background:var(--green-light);border-color:#a5d6bc;color:var(--green);">4</div>
+            <div class="peng-top">
+              <div class="peng-ri-name">Masjid Jami Al-Falah</div>
+              <div class="peng-nomor">No. SINARA/2025/BNT/3701</div>
+              <div class="peng-tags">
+                <span class="badge badge-green"><span class="dot dot-green"></span> Persetujuan Anggaran</span>
+                <span class="badge badge-yellow">Renovasi</span>
+                <span class="badge badge-yellow">Perlu Renovasi</span>
+              </div>
+            </div>
+          </div>
+          <div class="peng-data-grid">
+            <div class="peng-data-item"><div class="pdi-label">Kecamatan</div><div class="pdi-val">Cipayung</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Estimasi Biaya</div><div class="pdi-val">Rp 120.000.000</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Tgl Pengajuan</div><div class="pdi-val">25 Apr 2025</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Rencana Mulai</div><div class="pdi-val">15 Jun 2025</div></div>
+          </div>
+          <div class="peng-docs">
+            <span class="doc-label">Dokumen:</span>
+            <span class="doc-chip">Proposal Permohonan.pdf</span>
+            <span class="doc-chip">RAB Final.pdf</span>
+            <span class="doc-chip">Laporan Survei.pdf</span>
+          </div>
+          <!-- INFO ANGGARAN -->
+          <div class="tahap-detail anggaran">
+            <div class="tahap-label">Detail Persetujuan Anggaran</div>
+            <div class="tahap-grid">
+              <div class="tahap-item"><label>Biaya Diajukan</label><span>Rp 120.000.000</span></div>
+              <div class="tahap-item"><label>Biaya Disetujui</label><span>Menunggu keputusan</span></div>
+              <div class="tahap-item"><label>Sumber Dana</label><span>APBD 2025</span></div>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="ps-step"><div class="ps-dot done">1</div><div class="ps-label done">Dikirim</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">2</div><div class="ps-label done">Verifikasi Dokumen</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">3</div><div class="ps-label done">Survei Lapangan</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot current">4</div><div class="ps-label current">Persetujuan Anggaran</div></div>
+            <div class="ps-line pending"></div>
+            <div class="ps-step"><div class="ps-dot pending">5</div><div class="ps-label pending">Pencairan Dana</div></div>
+          </div>
+          <div class="peng-card-footer">
+            <div class="peng-footer-info">Menunggu persetujuan tim anggaran</div>
+            <div class="peng-actions">
+              <button class="btn-detail" onclick="openDetailPengajuan(4)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectPengajuan(4,'Masjid Jami Al-Falah')">Tolak</button>
+              <button class="btn-gold" onclick="openApprovePengajuan(4,'Masjid Jami Al-Falah','pencairan')">Setujui Anggaran</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== CARD: Tahap 5 — Pencairan Dana ===== -->
+        <div class="peng-card" id="peng-card-5">
+          <div class="peng-card-header">
+            <div class="peng-num" style="background:var(--accent-soft);border-color:#f0c050;color:#a16207;">5</div>
+            <div class="peng-top">
+              <div class="peng-ri-name">Gereja GPIB Imanuel</div>
+              <div class="peng-nomor">No. SINARA/2025/BNT/3655</div>
+              <div class="peng-tags">
+                <span class="badge badge-yellow"><span class="dot dot-yellow"></span> Pencairan Dana</span>
+                <span class="badge badge-blue">Renovasi</span>
+                <span class="badge badge-green">Kondisi Baik</span>
+              </div>
+            </div>
+          </div>
+          <div class="peng-data-grid">
+            <div class="peng-data-item"><div class="pdi-label">Kecamatan</div><div class="pdi-val">Pancoran Mas</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Dana Disetujui</div><div class="pdi-val">Rp 150.000.000</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Tgl Pengajuan</div><div class="pdi-val">10 Apr 2025</div></div>
+            <div class="peng-data-item"><div class="pdi-label">Rencana Mulai</div><div class="pdi-val">1 Jun 2025</div></div>
+          </div>
+          <div class="peng-docs">
+            <span class="doc-label">Dokumen:</span>
+            <span class="doc-chip">Proposal Permohonan.pdf</span>
+            <span class="doc-chip">RAB Final.pdf</span>
+            <span class="doc-chip">SK Persetujuan.pdf</span>
+          </div>
+          <!-- INFO PENCAIRAN -->
+          <div class="tahap-detail pencairan">
+            <div class="tahap-label">Detail Pencairan Dana</div>
+            <div class="tahap-grid">
+              <div class="tahap-item"><label>Dana Disetujui</label><span>Rp 150.000.000</span></div>
+              <div class="tahap-item"><label>No. Rekening</label><span>1234-5678-9012</span></div>
+              <div class="tahap-item"><label>Bank</label><span>Bank BJB</span></div>
+            </div>
+          </div>
+          <div class="pipeline">
+            <div class="ps-step"><div class="ps-dot done">1</div><div class="ps-label done">Dikirim</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">2</div><div class="ps-label done">Verifikasi Dokumen</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">3</div><div class="ps-label done">Survei Lapangan</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot done">4</div><div class="ps-label done">Persetujuan Anggaran</div></div>
+            <div class="ps-line done"></div>
+            <div class="ps-step"><div class="ps-dot current">5</div><div class="ps-label current">Pencairan Dana</div></div>
+          </div>
+          <div class="peng-card-footer">
+            <div class="peng-footer-info">Anggaran disetujui. Siap proses pencairan ke rekening pengurus.</div>
+            <div class="peng-actions">
+              <button class="btn-detail" onclick="openDetailPengajuan(5)">Lihat Detail</button>
+              <button class="btn-reject" onclick="openRejectPengajuan(5,'Gereja GPIB Imanuel')">Batalkan</button>
+              <button class="btn-approve" onclick="openApprovePengajuan(5,'Gereja GPIB Imanuel','selesai')">Konfirmasi Pencairan</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /tab-bantuan -->
+
+  </div><!-- /main-content -->
+</div><!-- /pemda-layout -->
+
+
+<!-- ============================================================
+     MODALS: VERIFIKASI RI
+     ============================================================ -->
+<div class="modal-overlay" id="modal-detail-ri" onclick="if(event.target===this)closeModal('modal-detail-ri')">
+  <div class="modal">
+    <div class="modal-header blue">
+      <div><div class="modal-title" id="detail-ri-title">Detail Rumah Ibadah</div><div class="modal-sub">Periksa kelengkapan data sebelum memverifikasi</div></div>
+      <button class="modal-close" onclick="closeModal('modal-detail-ri')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-section">
+        <div class="detail-section-title">Identitas Rumah Ibadah</div>
+        <div class="detail-grid">
+          <div><div class="detail-label">Nama</div><div class="detail-val" id="dri-nama">—</div></div>
+          <div><div class="detail-label">Jenis</div><div class="detail-val" id="dri-jenis">—</div></div>
+          <div><div class="detail-label">Tahun Berdiri</div><div class="detail-val" id="dri-tahun">—</div></div>
+          <div><div class="detail-label">Kondisi</div><div class="detail-val" id="dri-kondisi">—</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Lokasi</div>
+        <div class="detail-grid">
+          <div style="grid-column:1/-1"><div class="detail-label">Alamat</div><div class="detail-val" id="dri-alamat">—</div></div>
+          <div><div class="detail-label">Kecamatan</div><div class="detail-val" id="dri-kecamatan">—</div></div>
+          <div><div class="detail-label">Kelurahan</div><div class="detail-val" id="dri-kelurahan">—</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Kontak Pengurus</div>
+        <div class="detail-grid">
+          <div><div class="detail-label">Nama Ketua</div><div class="detail-val" id="dri-ketua">—</div></div>
+          <div><div class="detail-label">WhatsApp</div><div class="detail-val" id="dri-wa">—</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-detail-ri')">Tutup</button>
+      <button class="btn-danger" id="dri-reject-btn">Tolak</button>
+      <button class="btn-primary" id="dri-approve-btn">Setujui Pendaftaran</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-approve-ri" onclick="if(event.target===this)closeModal('modal-approve-ri')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header green">
+      <div><div class="modal-title">Setujui Pendaftaran</div><div class="modal-sub" id="approve-ri-sub">—</div></div>
+      <button class="modal-close" onclick="closeModal('modal-approve-ri')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box green"><strong>Konfirmasi Persetujuan</strong>Anda akan menyetujui pendaftaran <strong id="approve-ri-name"></strong>. Status akan berubah menjadi <b>Terdaftar</b>.</div>
+      <div class="form-row">
+        <label class="form-label">Catatan untuk Pengurus <span style="font-size:11px;color:var(--gray-400);font-weight:400;">(opsional)</span></label>
+        <textarea class="form-input" placeholder="Contoh: Data Anda telah terverifikasi. Pastikan data selalu diperbarui."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-approve-ri')">Batal</button>
+      <button class="btn-primary" onclick="doApproveRI()">Ya, Setujui</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-reject-ri" onclick="if(event.target===this)closeModal('modal-reject-ri')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header red">
+      <div><div class="modal-title">Tolak Pendaftaran</div><div class="modal-sub" id="reject-ri-sub">—</div></div>
+      <button class="modal-close" onclick="closeModal('modal-reject-ri')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box red"><strong>Perhatian</strong>Penolakan akan mengubah status <strong id="reject-ri-name"></strong> menjadi <b>Tidak Terdaftar</b>.</div>
+      <div class="form-row">
+        <label class="form-label">Alasan Penolakan <span style="color:var(--red);">*</span></label>
+        <textarea class="form-input" id="reject-ri-alasan" placeholder="Jelaskan alasan dan apa yang harus diperbaiki pengurus." style="min-height:100px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-reject-ri')">Batal</button>
+      <button class="btn-danger" onclick="doRejectRI()">Ya, Tolak</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DETAIL PENGAJUAN -->
+<div class="modal-overlay" id="modal-detail-peng" onclick="if(event.target===this)closeModal('modal-detail-peng')">
+  <div class="modal">
+    <div class="modal-header blue">
+      <div><div class="modal-title" id="dpeng-title">Detail Pengajuan</div><div class="modal-sub" id="dpeng-nomor">—</div></div>
+      <button class="modal-close" onclick="closeModal('modal-detail-peng')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-section">
+        <div class="detail-section-title">Identitas &amp; Pengajuan</div>
+        <div class="detail-grid">
+          <div><div class="detail-label">Nama RI</div><div class="detail-val" id="dpeng-nama">—</div></div>
+          <div><div class="detail-label">Kecamatan</div><div class="detail-val" id="dpeng-kecamatan">—</div></div>
+          <div><div class="detail-label">Jenis Bantuan</div><div class="detail-val" id="dpeng-jenis">—</div></div>
+          <div><div class="detail-label">Estimasi Biaya</div><div class="detail-val" id="dpeng-biaya">—</div></div>
+          <div><div class="detail-label">Tahap Saat Ini</div><div class="detail-val" id="dpeng-tahap">—</div></div>
+          <div><div class="detail-label">Kondisi Bangunan</div><div class="detail-val" id="dpeng-kondisi">—</div></div>
+          <div style="grid-column:1/-1"><div class="detail-label">Deskripsi Kebutuhan</div><div class="detail-val" id="dpeng-deskripsi">—</div></div>
+        </div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-section-title">Dokumen Pendukung</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <span class="doc-chip">Proposal Permohonan.pdf</span>
+          <span class="doc-chip">RAB.pdf</span>
+          <span class="doc-chip">Sertifikat Tanah.pdf</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-detail-peng')">Tutup</button>
+      <button class="btn-danger" id="dpeng-reject-btn">Tolak Pengajuan</button>
+      <button class="btn-primary" id="dpeng-approve-btn">Lanjutkan Tahap</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: APPROVE PENGAJUAN (dinamis untuk semua tahap) -->
+<div class="modal-overlay" id="modal-approve-peng" onclick="if(event.target===this)closeModal('modal-approve-peng')">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-header green" id="approve-peng-header">
+      <div><div class="modal-title" id="approve-peng-title">Lanjutkan Tahap</div><div class="modal-sub" id="approve-peng-sub">—</div></div>
+      <button class="modal-close" onclick="closeModal('modal-approve-peng')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box green" id="approve-peng-infobox"><strong id="approve-peng-confirm-title">Konfirmasi</strong><span id="approve-peng-confirm-desc">Pengajuan akan dilanjutkan ke tahap berikutnya.</span></div>
+      <div class="form-row" id="wrap-jadwal">
+        <label class="form-label">Jadwal Survei Lapangan</label>
+        <input type="date" class="form-input" id="inp-jadwal">
+        <div class="form-hint">Tentukan tanggal kunjungan tim survei ke lokasi.</div>
+      </div>
+      <div class="form-row" id="wrap-petugas">
+        <label class="form-label">Nama Petugas Survei</label>
+        <input type="text" class="form-input" id="inp-petugas" placeholder="Nama petugas yang ditugaskan">
+      </div>
+      <div class="form-row" id="wrap-nominal">
+        <label class="form-label">Nominal Anggaran Disetujui (Rp)</label>
+        <input type="number" class="form-input" id="inp-nominal" placeholder="Contoh: 120000000">
+        <div class="form-hint">Isi sesuai keputusan tim anggaran.</div>
+      </div>
+      <div class="form-row" id="wrap-rekening">
+        <label class="form-label">Konfirmasi No. Rekening Penerima</label>
+        <input type="text" class="form-input" id="inp-rekening" placeholder="Nomor rekening pengurus RI">
+        <div class="form-hint">Pastikan nomor rekening sesuai data pengurus.</div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Catatan <span style="font-size:11px;color:var(--gray-400);font-weight:400;">(opsional)</span></label>
+        <textarea class="form-input" id="inp-catatan" placeholder="Catatan tambahan untuk pengurus..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-approve-peng')">Batal</button>
+      <button class="btn-primary" id="approve-peng-btn" onclick="doApprovePengajuan()">Konfirmasi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TOLAK PENGAJUAN -->
+<div class="modal-overlay" id="modal-reject-peng" onclick="if(event.target===this)closeModal('modal-reject-peng')">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header red">
+      <div><div class="modal-title">Tolak Pengajuan Bantuan</div><div class="modal-sub" id="reject-peng-sub">—</div></div>
+      <button class="modal-close" onclick="closeModal('modal-reject-peng')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-box red"><strong>Perhatian</strong>Pengajuan dari <strong id="reject-peng-name"></strong> akan ditolak. Sesuai aturan 1 kali setahun, pengurus baru dapat mengajukan ulang pada <b>tahun anggaran berikutnya</b>.</div>
+      <div class="form-row">
+        <label class="form-label">Alasan Penolakan <span style="color:var(--red);">*</span></label>
+        <textarea class="form-input" id="reject-peng-alasan" placeholder="Jelaskan alasan penolakan. Contoh: Dokumen tidak lengkap, estimasi biaya tidak wajar." style="min-height:100px;"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-reject-peng')">Batal</button>
+      <button class="btn-danger" onclick="doRejectPengajuan()">Ya, Tolak Pengajuan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-msg"></span></div>
+
+<script>
+// ===== TAB =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn-nav').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn-nav')[tab === 'ri' ? 0 : 1].classList.add('active');
+}
+
+// ===== MODAL =====
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ===== TOAST =====
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.className = 'toast show ' + (type || 'success');
+  document.getElementById('toast-icon').textContent = type === 'reject' ? '✖' : '✓';
+  document.getElementById('toast-msg').textContent = msg;
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+// ===== DATA =====
+const riData = {
+  1: { nama:'Mushola Al-Hikmah', jenis:'Mushola', tahun:'1998', kondisi:'Kritis', alamat:'Perum Griya Indah Blok C No. 12', kecamatan:'Sawangan', kelurahan:'Kedaung', ketua:'Hj. Nurjanah', wa:'081234567890' },
+  2: { nama:'Pura Parahyangan Asri', jenis:'Pura', tahun:'1975', kondisi:'Perlu Renovasi', alamat:'Jl. Merdeka No. 89', kecamatan:'Beji', kelurahan:'Beji Timur', ketua:'I Wayan Suartha', wa:'082345678901' },
+  3: { nama:'Mushola Nurul Iman', jenis:'Mushola', tahun:'2003', kondisi:'Kritis', alamat:'Komp. Perumahan Depok Mas Blok A2', kecamatan:'Sukmajaya', kelurahan:'Abadijaya', ketua:'Bapak Supardi', wa:'083456789012' },
+  4: { nama:'Masjid Al-Barokah', jenis:'Masjid', tahun:'1990', kondisi:'Perlu Renovasi', alamat:'Jl. Kedung Badak No. 7', kecamatan:'Cipayung', kelurahan:'Kedung Badak', ketua:'Ust. Ridwan', wa:'084567890123' },
+};
+const pengData = {
+  1: { nama:'Mushola Al-Hikmah', nomor:'SINARA/2025/BNT/3847', kecamatan:'Sawangan', kondisi:'Kritis', jenis:'Pembangunan', biaya:'Rp 200.000.000', tahap:'Verifikasi Dokumen', deskripsi:'Bangunan mushola sangat tua, atap bocor parah, dinding retak. Jamaah tidak aman jika tetap digunakan.', nextStage:'survei' },
+  2: { nama:'Pura Parahyangan Asri', nomor:'SINARA/2025/BNT/3821', kecamatan:'Beji', kondisi:'Perlu Renovasi', jenis:'Renovasi', biaya:'Rp 90.000.000', tahap:'Verifikasi Dokumen', deskripsi:'Genteng bocor dan cat mengelupas akibat cuaca. Perlu perbaikan segera agar ibadah nyaman.', nextStage:'survei' },
+  3: { nama:'Masjid Ar-Rahman', nomor:'SINARA/2025/BNT/3756', kecamatan:'Sukmajaya', kondisi:'Perlu Renovasi', jenis:'Pembangunan', biaya:'Rp 250.000.000', tahap:'Survei Lapangan', deskripsi:'Masjid berdiri sejak 1985. Kapasitas tidak cukup. Rencana perluasan sayap kanan untuk 200 jamaah tambahan.', nextStage:'anggaran' },
+  4: { nama:'Masjid Jami Al-Falah', nomor:'SINARA/2025/BNT/3701', kecamatan:'Cipayung', kondisi:'Perlu Renovasi', jenis:'Renovasi', biaya:'Rp 120.000.000', tahap:'Persetujuan Anggaran', deskripsi:'Renovasi atap dan dinding sisi timur yang retak. Direkomendasikan oleh petugas survei.', nextStage:'pencairan' },
+  5: { nama:'Gereja GPIB Imanuel', nomor:'SINARA/2025/BNT/3655', kecamatan:'Pancoran Mas', kondisi:'Baik', jenis:'Renovasi', biaya:'Rp 150.000.000', tahap:'Pencairan Dana', deskripsi:'Renovasi interior dan cat eksterior. Anggaran telah disetujui. Siap proses pencairan.', nextStage:'selesai' },
+};
+
+const stageLabel = { survei:'Survei Lapangan', anggaran:'Persetujuan Anggaran', pencairan:'Pencairan Dana', selesai:'Selesai Dicairkan' };
+const stageHeaderColor = { survei:'blue', anggaran:'green', pencairan:'gold', selesai:'green' };
+const stageInfoColor = {
+  survei: { bg:'var(--blue-soft)', border:'#b3c9f5', color:'var(--blue)' },
+  anggaran: { bg:'var(--green-light)', border:'#a5d6bc', color:'var(--green)' },
+  pencairan: { bg:'var(--accent-soft)', border:'#f0c050', color:'#a16207' },
+  selesai: { bg:'var(--green-light)', border:'#a5d6bc', color:'var(--green)' },
+};
+
+let curRI = null, curPeng = null, curNextStage = null;
+
+// ===== RI VERIFIKASI =====
+function openDetailRI(id) {
+  curRI = id; const d = riData[id];
+  document.getElementById('detail-ri-title').textContent = 'Detail: ' + d.nama;
+  ['nama','jenis','tahun','kondisi','alamat','kecamatan','kelurahan','ketua','wa'].forEach(k => {
+    document.getElementById('dri-' + k).textContent = d[k];
+  });
+  document.getElementById('dri-approve-btn').onclick = () => { closeModal('modal-detail-ri'); openApproveRI(id, d.nama); };
+  document.getElementById('dri-reject-btn').onclick = () => { closeModal('modal-detail-ri'); openRejectRI(id, d.nama); };
+  openModal('modal-detail-ri');
+}
+function openApproveRI(id, nama) {
+  curRI = id;
+  document.getElementById('approve-ri-name').textContent = nama;
+  document.getElementById('approve-ri-sub').textContent = nama + ' akan berstatus Terdaftar';
+  openModal('modal-approve-ri');
+}
+function doApproveRI() {
+  hideCard('ri-card-' + curRI, () => updateEmpty('ri-card-list', 'veri-card', 'Semua pendaftaran sudah diverifikasi'));
+  closeModal('modal-approve-ri');
+  showToast('Pendaftaran disetujui! Pengurus akan mendapat notifikasi.', 'success');
+}
+function openRejectRI(id, nama) {
+  curRI = id;
+  document.getElementById('reject-ri-name').textContent = nama;
+  document.getElementById('reject-ri-sub').textContent = nama;
+  document.getElementById('reject-ri-alasan').value = '';
+  openModal('modal-reject-ri');
+}
+function doRejectRI() {
+  if (!document.getElementById('reject-ri-alasan').value.trim()) { alert('Alasan penolakan wajib diisi.'); return; }
+  hideCard('ri-card-' + curRI, () => updateEmpty('ri-card-list', 'veri-card', 'Semua pendaftaran sudah diverifikasi'));
+  closeModal('modal-reject-ri');
+  showToast('Pendaftaran ditolak. Pengurus mendapat notifikasi beserta alasan.', 'reject');
+}
+
+// ===== PENGAJUAN =====
+function openDetailPengajuan(id) {
+  curPeng = id; const d = pengData[id];
+  document.getElementById('dpeng-title').textContent = 'Pengajuan: ' + d.nama;
+  document.getElementById('dpeng-nomor').textContent = 'No. ' + d.nomor;
+  document.getElementById('dpeng-nama').textContent = d.nama;
+  document.getElementById('dpeng-kecamatan').textContent = d.kecamatan;
+  document.getElementById('dpeng-jenis').textContent = d.jenis;
+  document.getElementById('dpeng-biaya').textContent = d.biaya;
+  document.getElementById('dpeng-tahap').textContent = d.tahap;
+  document.getElementById('dpeng-kondisi').textContent = d.kondisi;
+  document.getElementById('dpeng-deskripsi').textContent = d.deskripsi;
+  const lbl = stageLabel[d.nextStage] || 'Tahap Berikutnya';
+  document.getElementById('dpeng-approve-btn').textContent = 'Lanjutkan ke ' + lbl;
+  document.getElementById('dpeng-approve-btn').onclick = () => { closeModal('modal-detail-peng'); openApprovePengajuan(id, d.nama, d.nextStage); };
+  document.getElementById('dpeng-reject-btn').onclick = () => { closeModal('modal-detail-peng'); openRejectPengajuan(id, d.nama); };
+  openModal('modal-detail-peng');
+}
+
+function openApprovePengajuan(id, nama, stage) {
+  curPeng = id; curNextStage = stage;
+  const lbl = stageLabel[stage] || stage;
+  const hc = stageHeaderColor[stage] || 'green';
+  const ic = stageInfoColor[stage] || stageInfoColor.anggaran;
+  document.getElementById('approve-peng-header').className = 'modal-header ' + hc;
+  document.getElementById('approve-peng-title').textContent = stage === 'selesai' ? 'Konfirmasi Pencairan Dana' : 'Lanjutkan ke ' + lbl;
+  document.getElementById('approve-peng-sub').textContent = 'Pengajuan: ' + nama;
+  const box = document.getElementById('approve-peng-infobox');
+  box.style.background = ic.bg; box.style.border = '1px solid ' + ic.border; box.style.color = ic.color;
+  document.getElementById('approve-peng-confirm-title').textContent = 'Konfirmasi — ' + lbl;
+  document.getElementById('approve-peng-confirm-desc').textContent = stage === 'selesai'
+    ? 'Dana akan dicairkan ke rekening pengurus. Pastikan nomor rekening sudah benar.'
+    : 'Pengajuan ' + nama + ' akan dilanjutkan ke tahap ' + lbl + '.';
+  const showJadwal = stage === 'survei';
+  const showNominal = stage === 'anggaran';
+  const showRekening = stage === 'pencairan' || stage === 'selesai';
+  document.getElementById('wrap-jadwal').style.display = showJadwal ? 'block' : 'none';
+  document.getElementById('wrap-petugas').style.display = showJadwal ? 'block' : 'none';
+  document.getElementById('wrap-nominal').style.display = showNominal ? 'block' : 'none';
+  document.getElementById('wrap-rekening').style.display = showRekening ? 'block' : 'none';
+  if (showJadwal) { const d = new Date(); d.setDate(d.getDate()+7); document.getElementById('inp-jadwal').value = d.toISOString().split('T')[0]; }
+  document.getElementById('inp-catatan').value = '';
+  const btnLabels = { survei:'Konfirmasi Jadwal Survei', anggaran:'Setujui Anggaran', pencairan:'Proses Pencairan', selesai:'Konfirmasi Pencairan' };
+  document.getElementById('approve-peng-btn').textContent = btnLabels[stage] || 'Konfirmasi';
+  openModal('modal-approve-peng');
+}
+
+function doApprovePengajuan() {
+  const lbl = stageLabel[curNextStage];
+  const msg = curNextStage === 'selesai' ? 'Pencairan dana berhasil dikonfirmasi!' : 'Pengajuan dilanjutkan ke tahap: ' + lbl + '.';
+  hideCard('peng-card-' + curPeng, () => updateEmpty('bantuan-card-list', 'peng-card', 'Semua pengajuan sudah diproses'));
+  closeModal('modal-approve-peng');
+  showToast(msg, 'success');
+}
+
+function openRejectPengajuan(id, nama) {
+  curPeng = id;
+  document.getElementById('reject-peng-name').textContent = nama;
+  document.getElementById('reject-peng-sub').textContent = nama;
+  document.getElementById('reject-peng-alasan').value = '';
+  openModal('modal-reject-peng');
+}
+function doRejectPengajuan() {
+  if (!document.getElementById('reject-peng-alasan').value.trim()) { alert('Alasan penolakan wajib diisi.'); return; }
+  hideCard('peng-card-' + curPeng, () => updateEmpty('bantuan-card-list', 'peng-card', 'Semua pengajuan sudah diproses'));
+  closeModal('modal-reject-peng');
+  showToast('Pengajuan ditolak. Pengurus mendapat notifikasi beserta alasan.', 'reject');
+}
+
+// ===== HELPERS =====
+function hideCard(id, cb) {
+  const el = document.getElementById(id);
+  if (el) { el.style.opacity = '0.4'; el.style.transition = 'opacity 0.35s'; setTimeout(() => { el.style.display = 'none'; if (cb) cb(); }, 380); }
+}
+function updateEmpty(listId, cardClass, msg) {
+  const visible = document.querySelectorAll('#' + listId + ' .' + cardClass + ':not([style*="display: none"])').length;
+  if (visible === 0) { document.getElementById(listId).innerHTML = '<div class="empty-state"><div class="empty-title">' + msg + '</div><div class="empty-desc">Tidak ada antrian yang perlu ditindaklanjuti saat ini.</div></div>'; }
+}
+
+// Init
+document.getElementById('wrap-jadwal').style.display = 'none';
+document.getElementById('wrap-petugas').style.display = 'none';
+document.getElementById('wrap-nominal').style.display = 'none';
+document.getElementById('wrap-rekening').style.display = 'none';
+
+// ===== USER MENU =====
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+function logout() {
+  document.getElementById('userDropdown').classList.remove('open');
+  window.location.href = 'login.html';
+}
+document.addEventListener('click', function() {
+  document.getElementById('userDropdown').classList.remove('open');
+});
+</script>
+</body>
+</html>

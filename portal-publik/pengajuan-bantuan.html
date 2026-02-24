@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Pengajuan Bantuan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap">
+<style>
+:root {
+  --green: #1a6b4a; --green-mid: #2d8f63; --green-light: #e8f5ef;
+  --accent: #f0a500; --accent-soft: #fff8e6;
+  --red: #e05252; --red-soft: #fdf0f0;
+  --blue: #3a7bd5; --blue-soft: #eef4ff;
+  --gray-50: #f9fafb; --gray-100: #f2f4f7; --gray-200: #e4e7ec;
+  --gray-400: #98a2b3; --gray-600: #475467; --gray-800: #1d2939;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+.topbar { background: var(--green); color: white; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; color: white; }
+.brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+.back-btn { display: flex; align-items: center; gap: 6px; font-size: 13px; color: rgba(255,255,255,0.8); text-decoration: none; transition: color 0.15s; }
+.back-btn:hover { color: white; }
+.page-entry { background: white; border-bottom: 1px solid var(--gray-200); padding: 40px 24px 36px; text-align: center; }
+.page-entry-inner { max-width: 600px; margin: 0 auto; }
+.page-entry-icon { width: 72px; height: 72px; background: var(--green-light); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.page-entry h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 26px; font-weight: 800; color: var(--gray-800); margin-bottom: 10px; }
+.page-entry p { font-size: 15px; color: var(--gray-400); line-height: 1.6; margin-bottom: 28px; }
+.btn-mulai { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--green); color: white; border-radius: 12px; font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; border: none; cursor: pointer; transition: background 0.15s; }
+.btn-mulai:hover { background: var(--green-mid); }
+.entry-meta { display: flex; justify-content: center; gap: 24px; margin-top: 24px; flex-wrap: wrap; }
+.entry-meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-400); }
+.form-area { display: none; }
+.pg-body { max-width: 680px; margin: 0 auto; padding: 32px 20px 80px; }
+.form-card { background: white; border-radius: 14px; border: 1px solid var(--gray-200); padding: 24px; margin-bottom: 16px; }
+.card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: var(--gray-800); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 10px; }
+.card-title-num { width: 26px; height: 26px; background: var(--green-light); color: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.form-group { margin-bottom: 18px; }
+.form-group:last-child { margin-bottom: 0; }
+label { display: block; font-size: 14px; font-weight: 600; color: var(--gray-600); margin-bottom: 7px; }
+label .req { color: var(--red); margin-left: 2px; }
+.form-control { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 15px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); background: var(--gray-50); transition: border-color 0.15s; }
+.form-control:focus { outline: none; border-color: var(--green-mid); background: white; }
+.form-control::placeholder { color: var(--gray-400); }
+select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 7L13 1' stroke='%2398a2b3' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+textarea.form-control { resize: vertical; min-height: 100px; }
+.form-hint { font-size: 12px; color: var(--gray-400); margin-top: 5px; line-height: 1.4; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.nominal-wrap { position: relative; }
+.nominal-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; font-weight: 600; color: var(--gray-400); pointer-events: none; }
+.nominal-input { padding-left: 42px !important; }
+.note-yellow { background: var(--accent-soft); border: 1px solid #f0c050; border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #8a6000; line-height: 1.6; }
+.note-blue { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; font-size: 13px; color: #2d5fa8; line-height: 1.6; }
+.note-title { font-weight: 700; font-size: 14px; margin-bottom: 4px; display: block; }
+.doc-guide { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; }
+.doc-guide-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--gray-600); margin-bottom: 10px; }
+.doc-list { list-style: none; }
+.doc-list li { font-size: 13px; color: var(--gray-600); padding: 5px 0; border-bottom: 1px solid var(--gray-200); display: flex; align-items: flex-start; gap: 8px; }
+.doc-list li:last-child { border-bottom: none; }
+.doc-num { width: 20px; height: 20px; background: var(--green-light); color: var(--green); border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.upload-area { border: 2px dashed var(--gray-200); border-radius: 10px; padding: 28px 20px; text-align: center; background: var(--gray-50); cursor: pointer; transition: border-color 0.15s; }
+.upload-area:hover { border-color: var(--green-mid); }
+.upload-icon { font-size: 30px; margin-bottom: 8px; }
+.upload-text { font-size: 14px; color: var(--gray-400); margin-bottom: 4px; }
+.upload-link { color: var(--green); font-weight: 600; }
+.upload-sub { font-size: 12px; color: var(--gray-400); }
+.btn-primary { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:hover { background: var(--green-mid); }
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); }
+.modal-overlay.show { display: flex; }
+.modal-box { background: white; border-radius: 20px; padding: 40px 32px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+.modal-icon { font-size: 52px; margin-bottom: 16px; }
+.modal-box h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 10px; color: var(--gray-800); }
+.modal-box p { font-size: 14px; color: var(--gray-400); line-height: 1.6; margin-bottom: 12px; }
+.modal-nomor { background: var(--green-light); color: var(--green); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; padding: 12px 20px; border-radius: 10px; margin: 14px 0; letter-spacing: 1px; }
+.btn-tutup { display: block; width: 100%; padding: 13px; background: var(--green); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; margin-top: 16px; transition: background 0.15s; }
+.btn-tutup:hover { background: var(--green-mid); }
+.btn-tutup-sec { display: block; width: 100%; padding: 12px; background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 10px; font-size: 14px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; margin-top: 8px; transition: all 0.15s; text-decoration: none; text-align: center; }
+.btn-tutup-sec:hover { border-color: var(--gray-400); color: var(--gray-800); }
+@media (max-width: 560px) { .form-row { grid-template-columns: 1fr; } .topbar { padding: 0 16px; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="index.html">
+    <div class="brand-icon">🏢</div>
+    <div>
+      <div class="brand-text">SINARA</div>
+      <span class="brand-sub">Sistem Informasi Manajemen Bantuan & Aset Rumah Ibadah</span>
+    </div>
+  </a>
+  <a class="back-btn" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 13L5 8l5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kembali
+  </a>
+</div>
+
+<!-- PAGE ENTRY -->
+<div class="page-entry" id="pageEntry">
+  <div class="page-entry-inner">
+    <div class="page-entry-icon">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <path d="M10 12h16M10 18h10M10 24h8" stroke="#1a6b4a" stroke-width="2" stroke-linecap="round"/>
+        <rect x="4" y="4" width="28" height="28" rx="5" stroke="#1a6b4a" stroke-width="2"/>
+        <path d="M24 22l4 4m0 0l-4 4m4-4h-7" stroke="#1a6b4a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Pengajuan Bantuan Pendanaan</h1>
+    <p>Formulir pengajuan bantuan dana dari Pemerintah Kota Depok untuk pembangunan atau renovasi rumah ibadah. Pastikan rumah ibadah Anda sudah terdaftar sebelum mengisi formulir ini.</p>
+    <button class="btn-mulai" onclick="mulaiIsi()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Mulai Isi Formulir
+    </button>
+    <div class="entry-meta">
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v3.5l2 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Estimasi 10–15 menit
+      </div>
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Data terenkripsi & aman
+      </div>
+      <div class="entry-meta-item">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H8l-3 3v-3H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Respon 3–7 hari kerja
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FORM AREA -->
+<div class="form-area" id="formArea">
+<div class="pg-body">
+
+  <div class="note-yellow">
+    <span class="note-title">⚠️ Perhatian sebelum mengisi</span>
+    Rumah ibadah harus sudah terdaftar dan terverifikasi di sistem SINARA. Jika belum, <a href="daftarkan-rumah-ibadah.html" style="color:#8a6000;font-weight:700;">daftarkan terlebih dahulu</a>. Pengajuan hanya dapat dilakukan satu kali dalam satu tahun kalender.
+  </div>
+
+  <!-- CARD 1: Identitas Rumah Ibadah -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">1</span> Identitas Rumah Ibadah</div>
+    <div class="form-group">
+      <label>Jenis Rumah Ibadah <span class="req">*</span></label>
+      <select class="form-control" onchange="updateNamaRI(this.value)">
+        <option value="">-- Pilih jenis --</option>
+        <option>Masjid</option><option>Mushola</option>
+        <option>Gereja Protestan</option><option>Gereja Katolik</option>
+        <option>Pura</option><option>Klenteng</option><option>Vihara</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Nama Rumah Ibadah <span class="req">*</span></label>
+      <select class="form-control" id="dropdown-nama-ri">
+        <option value="">-- Pilih jenis rumah ibadah terlebih dahulu --</option>
+      </select>
+      <div class="form-hint">Tidak ada dalam daftar? <a href="daftarkan-rumah-ibadah.html" style="color:var(--green);font-weight:600;">Daftarkan di sini →</a></div>
+    </div>
+  </div>
+
+  <!-- CARD 2: Detail Pengajuan -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">2</span> Detail Pengajuan Bantuan</div>
+    <div class="form-group">
+      <label>Nominal Bantuan yang Diajukan <span class="req">*</span></label>
+      <div class="nominal-wrap">
+        <span class="nominal-prefix">Rp</span>
+        <input type="text" class="form-control nominal-input" id="inputNominal" placeholder="Contoh: 150.000.000" oninput="formatNominal(this)">
+      </div>
+      <div class="form-hint">Sesuaikan dengan kebutuhan aktual. Maksimal pengajuan Rp 500.000.000 per satu tahun anggaran.</div>
+    </div>
+    <div class="form-group">
+      <label>Tujuan Pengajuan <span class="req">*</span></label>
+      <textarea class="form-control" rows="4" placeholder="Jelaskan tujuan pengajuan bantuan ini. Contoh: Renovasi atap bangunan yang bocor, pembangunan fasilitas wudhu baru, perbaikan dinding struktur yang retak..."></textarea>
+      <div class="form-hint">Semakin jelas dan detail tujuan yang disampaikan, semakin mudah proses verifikasi oleh petugas.</div>
+    </div>
+  </div>
+
+  <!-- CARD 3: Data PIC -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">3</span> Data PIC Pengaju</div>
+    <div class="form-group">
+      <label>Nama PIC <span class="req">*</span></label>
+      <input type="text" class="form-control" placeholder="Nama lengkap sesuai KTP">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>No. Telepon / WhatsApp <span class="req">*</span></label>
+        <input type="tel" class="form-control" placeholder="Contoh: 08123456789">
+        <div class="form-hint">Untuk konfirmasi dan pemberitahuan perkembangan pengajuan.</div>
+      </div>
+      <div class="form-group">
+        <label>Email (Opsional)</label>
+        <input type="email" class="form-control" placeholder="Contoh: pengurus@masjid.com">
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 4: Dokumen -->
+  <div class="form-card">
+    <div class="card-title"><span class="card-title-num">4</span> Dokumen Pendukung</div>
+    <div class="doc-guide">
+      <div class="doc-guide-title">Dokumen yang perlu disiapkan (format PDF atau gambar):</div>
+      <ul class="doc-list">
+        <li><span class="doc-num">1</span><span>Proposal permohonan bantuan (wajib)</span></li>
+        <li><span class="doc-num">2</span><span>Surat keterangan pengurus dari kepala kelurahan</span></li>
+        <li><span class="doc-num">3</span><span>Fotokopi KTP pengurus / ketua</span></li>
+        <li><span class="doc-num">4</span><span>Fotokopi buku rekening bank penerima</span></li>
+        <li><span class="doc-num">5</span><span>Foto kondisi bangunan saat ini (minimal 3 foto)</span></li>
+        <li><span class="doc-num">6</span><span>Dokumen kepemilikan atau izin penggunaan lahan (jika ada)</span></li>
+      </ul>
+    </div>
+    <div class="upload-area" onclick="document.getElementById('upload-dok').click()">
+      <div class="upload-icon">📎</div>
+      <div class="upload-text"><span class="upload-link">Pilih file</span> atau seret ke sini</div>
+      <div class="upload-sub">Maks. 5 file · Maks. 5 MB per file · Format: PDF, JPG, PNG</div>
+    </div>
+    <input type="file" id="upload-dok" multiple accept=".pdf,.jpg,.png" style="display:none" onchange="showFiles(this)">
+    <div id="file-list" style="margin-top:12px;"></div>
+
+    <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:10px;padding:16px;margin-top:16px;margin-bottom:8px;">
+      <div style="font-size:13px;font-weight:700;color:var(--gray-600);margin-bottom:12px;">Pernyataan Pengaju</div>
+      <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;font-size:13px;color:var(--gray-600);font-weight:400;">
+        <input type="checkbox" style="margin-top:3px;accent-color:var(--green);"> Data yang saya isi adalah benar dan dapat dipertanggungjawabkan. Saya bersedia diverifikasi lapangan oleh petugas Pemkot Depok.
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;cursor:pointer;font-size:13px;color:var(--gray-600);font-weight:400;">
+        <input type="checkbox" style="margin-top:3px;accent-color:var(--green);"> Saya memahami bahwa pengajuan ini tidak menjamin persetujuan bantuan. Keputusan sepenuhnya ada pada Pemkot Depok.
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:var(--gray-600);font-weight:400;">
+        <input type="checkbox" style="margin-top:3px;accent-color:var(--green);"> Jika bantuan disetujui, saya bersedia menggunakan dana sesuai peruntukan dan memberikan laporan kepada Pemkot Depok.
+      </label>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="kirimPengajuan()">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l5 5L14 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Kirim Pengajuan
+  </button>
+
+</div>
+</div>
+
+<!-- MODAL SUKSES -->
+<div class="modal-overlay" id="modal-sukses">
+  <div class="modal-box">
+    <div class="modal-icon">🎉</div>
+    <h3>Pengajuan Berhasil Dikirim!</h3>
+    <p>Nomor pengajuan Anda adalah:</p>
+    <div class="modal-nomor" id="nomorPengajuan">SINARA/2025/BNT/0001</div>
+    <p>Simpan nomor ini untuk memantau status pengajuan. Kami akan menghubungi Anda melalui WhatsApp yang didaftarkan dalam 3–7 hari kerja.</p>
+    <button class="btn-tutup" onclick="document.getElementById('modal-sukses').classList.remove('show')">✓ Mengerti</button>
+    <a class="btn-tutup-sec" href="cek-status.html">Cek Status Pengajuan →</a>
+  </div>
+</div>
+
+<script>
+function mulaiIsi() {
+  document.getElementById('pageEntry').style.display = 'none';
+  document.getElementById('formArea').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+function formatNominal(input) {
+  let val = input.value.replace(/\D/g, '');
+  if (val) input.value = parseInt(val).toLocaleString('id-ID');
+}
+const namaRI = {
+  'Masjid': ['Masjid Al-Hikmah', 'Masjid Nurul Iman', 'Masjid Baitul Makmur', 'Masjid Al-Ikhlas'],
+  'Mushola': ['Mushola An-Nur', 'Mushola Al-Falah', 'Mushola Baiturrahman'],
+  'Gereja Protestan': ['GPIB Immanuel Depok', 'GKI Depok', 'Gereja Bethel Depok'],
+  'Gereja Katolik': ['Paroki St. Antonius Depok', 'Paroki St. Yohanes Depok'],
+  'Pura': ['Pura Agung Sari', 'Pura Jagatnatha Depok'],
+  'Klenteng': ['Klenteng Hok Tek Bio Depok', 'Klenteng Dhanagun Depok'],
+  'Vihara': ['Vihara Dhamma Sakya Depok', 'Vihara Depok Indah']
+};
+function updateNamaRI(jenis) {
+  const sel = document.getElementById('dropdown-nama-ri');
+  if (!jenis || !namaRI[jenis]) { sel.innerHTML = '<option value="">-- Pilih jenis rumah ibadah terlebih dahulu --</option>'; return; }
+  sel.innerHTML = '<option value="">-- Pilih nama rumah ibadah --</option>';
+  namaRI[jenis].forEach(n => { const o = document.createElement('option'); o.value = n; o.textContent = n; sel.appendChild(o); });
+}
+function showFiles(input) {
+  const list = document.getElementById('file-list');
+  list.innerHTML = '';
+  Array.from(input.files).forEach(f => {
+    list.innerHTML += `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--green-light);border-radius:8px;margin-bottom:6px;font-size:13px;color:var(--green);">
+      <span>📄</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span>
+      <span style="font-size:11px;color:var(--green-mid);">${(f.size/1024).toFixed(0)} KB</span>
+    </div>`;
+  });
+}
+function kirimPengajuan() {
+  const tahun = new Date().getFullYear();
+  const nomor = 'SINARA/' + tahun + '/BNT/' + String(Math.floor(Math.random()*9000)+1000);
+  document.getElementById('nomorPengajuan').textContent = nomor;
+  document.getElementById('modal-sukses').classList.add('show');
+}
+</script>
+</body>
+</html>

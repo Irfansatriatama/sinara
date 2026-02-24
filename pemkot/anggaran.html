@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Pengelolaan Anggaran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/global.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--gray-100); color: var(--gray-600); }
+
+/* ===== PAGE SWITCHER ===== */
+.page-switcher { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; background: #0f1923; padding: 0 16px; height: 44px; display: flex; align-items: center; gap: 6px; overflow-x: auto; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.page-switcher > span { font-size: 10px; color: #98a2b3; font-weight: 700; margin-right: 8px; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; }
+.page-switcher a { text-decoration: none; flex-shrink: 0; }
+.tab-btn { padding: 5px 11px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; }
+.tab-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+.tab-btn.active { background: var(--green); color: white; border-color: var(--green); }
+.ps-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.1); flex-shrink: 0; margin: 0 4px; }
+
+/* ===== LAYOUT ===== */
+.pemda-layout { display: flex; min-height: 100vh; padding-top: 44px; }
+.sidebar { width: 220px; background: var(--gray-800); color: white; display: flex; flex-direction: column; position: fixed; top: 44px; left: 0; bottom: 0; z-index: 100; }
+.sidebar-logo { padding: 20px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo .logo-brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+.sidebar-logo .logo-sub { font-size: 10px; opacity: 0.45; margin-top: 3px; }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; padding: 9px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6); cursor: pointer; transition: all 0.15s; text-decoration: none; margin-bottom: 1px; }
+.nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.nav-item.active { background: var(--green); color: white; font-weight: 700; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.sidebar-footer { padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif; flex-shrink: 0; }
+.sidebar-user-name { font-size: 13px; font-weight: 700; color: white; }
+.sidebar-user-role { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 1px; }
+/* ===== USER ACTION MENU ===== */
+.sidebar-user-wrap { position: relative; }
+.sidebar-user { display: flex; align-items: center; gap: 10px; }
+.btn-user-menu {
+  margin-left: auto; flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: transparent; border: none;
+  border-radius: 6px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.btn-user-menu:hover { background: rgba(255,255,255,0.1); }
+.btn-user-menu svg { display: block; }
+.user-dropdown {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: #263244; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 200;
+}
+.user-dropdown.open { display: block; }
+a.user-dropdown-item { text-decoration: none; }
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.75); cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.user-dropdown-item:last-child { border-bottom: none; }
+.user-dropdown-item:hover { background: rgba(255,255,255,0.07); color: white; }
+.user-dropdown-item.danger { color: #f87171; }
+.user-dropdown-item.danger:hover { background: rgba(248,113,113,0.1); }
+.user-dropdown-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.7; }
+
+.main-content { margin-left: 220px; flex: 1; background: var(--gray-100); padding: 28px; min-height: calc(100vh - 44px); }
+.page-header { margin-bottom: 24px; }
+.breadcrumb { font-size: 12px; color: var(--gray-400); margin-bottom: 8px; }
+.breadcrumb span { color: var(--gray-600); }
+.page-header h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 3px; }
+.page-header p { font-size: 13px; color: var(--gray-400); }
+
+/* ===== ATURAN BANNER ===== */
+.aturan-banner { background: var(--accent-soft); border: 1px solid #f0c050; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #a16207; line-height: 1.5; }
+.aturan-banner strong { font-weight: 700; }
+
+/* ===== STAT GRID ===== */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+.stat-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); border-top: 3px solid transparent; }
+.stat-card.green { border-top-color: var(--green); }
+.stat-card.yellow { border-top-color: var(--accent); }
+.stat-card.blue { border-top-color: var(--blue); }
+.stat-label { font-size: 11px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 6px; }
+.stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+.stat-sub { font-size: 12px; color: var(--gray-400); }
+
+/* ===== CONTENT GRID ===== */
+.content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
+.card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 18px; }
+.progress-row { margin-bottom: 14px; }
+.progress-row:last-child { margin-bottom: 0; }
+.progress-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: var(--gray-600); }
+.progress-label .pct { font-weight: 700; color: var(--gray-800); font-size: 13px; }
+.progress-bar { height: 8px; background: var(--gray-100); border-radius: 8px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 8px; }
+.progress-sub { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+
+/* ===== FILTER ROW ===== */
+.filter-row { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+.filter-select { padding: 9px 30px 9px 12px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--gray-700); outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%2398a2b3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-color: white; }
+.btn-add { display: flex; align-items: center; gap: 6px; background: var(--green); color: white; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; margin-left: auto; }
+.btn-add:hover { background: var(--green-mid); }
+
+/* ===== TABLE ===== */
+.table-card { background: white; border-radius: 12px; border: 1px solid var(--gray-200); overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.table-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); }
+.table-card-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: var(--gray-50); padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.5px; font-family: 'Plus Jakarta Sans', sans-serif; border-bottom: 1px solid var(--gray-100); white-space: nowrap; }
+tbody td { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--gray-700); vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--gray-50); }
+.td-name { font-weight: 600; color: var(--gray-800); }
+.td-name-sub { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; }
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-yellow { background: var(--accent-soft); color: #a16207; }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+.amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--gray-800); }
+
+/* ===== MODAL ===== */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.modal { background: white; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
+.modal-header { padding: 18px 22px; background: var(--green); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: white; }
+.modal-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,0.2); color: white; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.modal-body { padding: 22px; }
+.modal-footer { padding: 14px 22px; border-top: 1px solid var(--gray-100); display: flex; gap: 10px; justify-content: flex-end; }
+.form-row { margin-bottom: 14px; }
+.form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; font-family: 'Plus Jakarta Sans', sans-serif; }
+.form-input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); outline: none; transition: all 0.15s; box-sizing: border-box; background: white; }
+.form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+.btn-primary { background: var(--green); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; }
+.btn-primary:hover { background: var(--green-mid); }
+.btn-secondary { background: white; color: var(--gray-600); border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; }
+</style>
+</head>
+<body>
+
+<!-- WIREFRAME NAV -->
+<div class="page-switcher">
+  <span>Wireframe</span>
+</div>
+
+<div class="pemda-layout">
+
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-brand">SINARA</div>
+      <div class="logo-sub">Kota Depok · 2025</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" href="dashboard.html">Dashboard</a>
+      <a class="nav-item" href="data-ri.html">Data Rumah Ibadah</a>
+      <a class="nav-item" href="verifikasi.html">Verifikasi <span class="nav-badge">7</span></a>
+      <a class="nav-item active" href="anggaran.html">Anggaran</a>
+      <a class="nav-item" href="laporan.html">Laporan</a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user-wrap">
+        <div class="user-dropdown" id="userDropdown">
+          <a class="user-dropdown-item" href="profil.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 13c0-2.5 2.7-4 6-4s6 1.5 6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Profil Saya
+          </a>
+          <a class="user-dropdown-item" href="ganti-password.html">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Ganti Password
+          </a>
+          <div class="user-dropdown-item danger" onclick="logout()">
+            <svg class="user-dropdown-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 2H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M10 11l3-3-3-3M13 8H6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Keluar
+          </div>
+        </div>
+        <div class="sidebar-user">
+          <div class="sidebar-avatar">BD</div>
+          <div style="flex:1;min-width:0;">
+            <div class="sidebar-user-name">Budi Darma</div>
+            <div class="sidebar-user-role">Admin Pemkot</div>
+          </div>
+          <button class="btn-user-menu" id="btnUserMenu" onclick="toggleUserMenu(event)" title="Menu akun">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="3" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="8" r="1.2" fill="rgba(255,255,255,0.6)"/>
+              <circle cx="8" cy="13" r="1.2" fill="rgba(255,255,255,0.6)"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <div class="breadcrumb">Dashboard <span>/ Pengelolaan Anggaran</span></div>
+    <div class="page-header">
+      <h1>Pengelolaan Anggaran</h1>
+      <p>Kelola dan pantau realisasi anggaran bantuan rumah ibadah tahun 2025.</p>
+    </div>
+
+    <!-- ATURAN 1X SETAHUN -->
+    <div class="aturan-banner">
+      <strong>Aturan Bantuan 1 Kali Setahun:</strong> Setiap rumah ibadah hanya dapat menerima satu alokasi bantuan (pembangunan atau renovasi) per tahun anggaran. Sistem akan menolak alokasi kedua untuk RI yang sama dalam tahun yang sama.
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card green">
+        <div class="stat-label">Total Anggaran 2025</div>
+        <div class="stat-val">Rp 2,4 M</div>
+        <div class="stat-sub">APBD Tahun Berjalan</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Total Realisasi</div>
+        <div class="stat-val">Rp 1,7 M</div>
+        <div class="stat-sub" style="color:var(--green); font-weight:600;">72% dari total anggaran</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Sisa Anggaran</div>
+        <div class="stat-val">Rp 700 Jt</div>
+        <div class="stat-sub" style="color:var(--accent); font-weight:600;">28% belum dialokasikan</div>
+      </div>
+    </div>
+
+    <!-- REALISASI + DISTRIBUSI -->
+    <div class="content-grid">
+      <div class="card">
+        <div class="card-title">Realisasi per Kategori Bantuan</div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Renovasi</span><span class="pct">78%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:78%; background:var(--green);"></div></div>
+          <div class="progress-sub">Rp 1,09 M dari Rp 1,4 M · 1x/tahun per RI</div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Pembangunan Baru</span><span class="pct">62%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:62%; background:var(--blue);"></div></div>
+          <div class="progress-sub">Rp 620 Jt dari Rp 1 M · 1x/tahun per RI</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Distribusi per Kecamatan</div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Pancoran Mas</span><span class="pct">Rp 420 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:62%; background:var(--green);"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Sukmajaya</span><span class="pct">Rp 380 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:56%; background:var(--green);"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Sawangan</span><span class="pct">Rp 310 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:46%; background:var(--green);"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Beji</span><span class="pct">Rp 290 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:43%; background:var(--accent);"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Cimanggis</span><span class="pct">Rp 180 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:27%; background:var(--accent);"></div></div>
+        </div>
+        <div class="progress-row">
+          <div class="progress-label"><span>Cipayung</span><span class="pct">Rp 120 Jt</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:18%; background:var(--red);"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER + TABEL -->
+    <div class="filter-row">
+      <select class="filter-select">
+        <option>Tahun 2025</option>
+        <option>Tahun 2024</option>
+        <option>Tahun 2023</option>
+      </select>
+      <select class="filter-select">
+        <option>Semua Kecamatan</option>
+        <option>Beji</option>
+        <option>Bojongsari</option>
+        <option>Cilodong</option>
+        <option>Cimanggis</option>
+        <option>Cinere</option>
+        <option>Cipayung</option>
+        <option>Limo</option>
+        <option>Pancoran Mas</option>
+        <option>Sawangan</option>
+        <option>Sukmajaya</option>
+        <option>Tapos</option>
+      </select>
+      <select class="filter-select">
+        <option>Semua Status</option>
+        <option>Sudah Dicairkan</option>
+        <option>Dalam Proses</option>
+        <option>Menunggu Persetujuan</option>
+      </select>
+      <button class="btn-add" onclick="openModal('modal-tambah')">+ Tambah Alokasi</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-card-header">
+        <div>
+          <div class="table-card-title">Alokasi Bantuan per Rumah Ibadah</div>
+          <div class="table-card-sub">18 alokasi aktif tahun 2025 · Maks. 1 alokasi per RI per tahun</div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Rumah Ibadah</th>
+            <th>Jenis Bantuan</th>
+            <th>Jumlah (Rp)</th>
+            <th>Tanggal Alokasi</th>
+            <th>Status Realisasi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><div class="td-name">Masjid Al-Ikhlas</div><div class="td-name-sub">Pancoran Mas</div></td>
+            <td>Renovasi</td>
+            <td class="amount">Rp 150.000.000</td>
+            <td>12 Jan 2025</td>
+            <td><span class="badge badge-green">Sudah Dicairkan</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Masjid Ar-Rahman</div><div class="td-name-sub">Sukmajaya</div></td>
+            <td>Pembangunan</td>
+            <td class="amount">Rp 250.000.000</td>
+            <td>15 Jan 2025</td>
+            <td><span class="badge badge-yellow">Dalam Proses</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Gereja GPIB Imanuel</div><div class="td-name-sub">Pancoran Mas</div></td>
+            <td>Renovasi</td>
+            <td class="amount">Rp 120.000.000</td>
+            <td>20 Feb 2025</td>
+            <td><span class="badge badge-green">Sudah Dicairkan</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Vihara Dharmakaya</div><div class="td-name-sub">Cimanggis</div></td>
+            <td>Pembangunan</td>
+            <td class="amount">Rp 180.000.000</td>
+            <td>05 Mar 2025</td>
+            <td><span class="badge badge-yellow">Dalam Proses</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Pura Parahyangan</div><div class="td-name-sub">Beji</div></td>
+            <td>Renovasi</td>
+            <td class="amount">Rp 90.000.000</td>
+            <td>10 Mar 2025</td>
+            <td><span class="badge badge-gray">Menunggu Persetujuan</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Mushola Al-Hikmah</div><div class="td-name-sub">Sawangan</div></td>
+            <td>Pembangunan</td>
+            <td class="amount">Rp 200.000.000</td>
+            <td>18 Apr 2025</td>
+            <td><span class="badge badge-gray">Menunggu Persetujuan</span></td>
+          </tr>
+          <tr>
+            <td><div class="td-name">Klenteng Hok Tek Bio</div><div class="td-name-sub">Pancoran Mas</div></td>
+            <td>Renovasi</td>
+            <td class="amount">Rp 75.000.000</td>
+            <td>22 Apr 2025</td>
+            <td><span class="badge badge-green">Sudah Dicairkan</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL TAMBAH ALOKASI -->
+<div class="modal-overlay" id="modal-tambah" onclick="if(event.target===this)closeModal('modal-tambah')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Tambah Alokasi Bantuan</div>
+      <button class="modal-close" onclick="closeModal('modal-tambah')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--accent-soft); border:1px solid #f0c050; border-radius:8px; padding:10px 14px; margin-bottom:16px; font-size:12px; color:#a16207;">
+        Periksa bahwa rumah ibadah ini belum menerima alokasi bantuan di tahun 2025 sebelum menambahkan.
+      </div>
+      <div class="form-row">
+        <label class="form-label">Nama Rumah Ibadah</label>
+        <input type="text" class="form-input" placeholder="Ketik nama atau pilih dari daftar...">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Jenis Bantuan</label>
+        <select class="form-input">
+          <option value="">-- Pilih Jenis --</option>
+          <option>Renovasi</option>
+          <option>Pembangunan Baru</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Jumlah Alokasi (Rp)</label>
+        <input type="number" class="form-input" placeholder="Contoh: 150000000">
+      </div>
+      <div class="form-row">
+        <label class="form-label">Tahun Anggaran</label>
+        <select class="form-input">
+          <option>2025</option>
+          <option>2024</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('modal-tambah')">Batal</button>
+      <button class="btn-primary">Simpan Alokasi</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// ===== USER MENU =====
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  document.getElementById('userDropdown').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('userDropdown').classList.remove('open');
+}
+function logout() {
+  document.getElementById('userDropdown').classList.remove('open');
+  window.location.href = 'login.html';
+}
+document.addEventListener('click', function() {
+  document.getElementById('userDropdown').classList.remove('open');
+});
+</script>
+</body>
+</html>

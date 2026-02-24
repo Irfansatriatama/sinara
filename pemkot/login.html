@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Login Pemda</title>
+<link rel="stylesheet" href="../assets/css/global.css">
+<style>
+  /* ===== AUTH PAGE ===== */
+  .auth-page {
+    min-height: 100vh;
+    display: flex;
+    background: var(--gray-100);
+  }
+
+  /* Left panel - branding */
+  .auth-panel-left {
+    width: 420px;
+    flex-shrink: 0;
+    background: var(--green);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-panel-left::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .auth-panel-left::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .panel-logo {
+    position: relative; z-index: 1;
+  }
+  .panel-logo .logo-box {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .panel-logo .app-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: white;
+    letter-spacing: -0.3px;
+  }
+  .panel-logo .app-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .panel-tagline {
+    position: relative; z-index: 1;
+  }
+  .panel-tagline h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 26px; font-weight: 700;
+    color: white;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+  .panel-tagline p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    line-height: 1.6;
+  }
+  .panel-footer {
+    position: relative; z-index: 1;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+
+  /* Right panel - form */
+  .auth-panel-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 32px;
+  }
+  .auth-form-wrap {
+    width: 100%;
+    max-width: 380px;
+  }
+  .auth-form-wrap .form-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+  }
+  .auth-form-wrap .form-subtitle {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 32px;
+  }
+
+  .role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-light);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(26,107,74,0.2);
+  }
+  .role-badge .dot { background: var(--green); margin: 0; }
+
+  .auth-form-wrap .form-group {
+    margin-bottom: 18px;
+  }
+  .auth-form-wrap .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    margin-bottom: 6px;
+  }
+  .auth-form-wrap .form-control {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 9px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--gray-800);
+    background: white;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .auth-form-wrap .form-control:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26,107,74,0.08);
+  }
+  .auth-form-wrap .form-control::placeholder { color: var(--gray-400); }
+
+  .input-with-icon {
+    position: relative;
+  }
+  .input-with-icon .form-control {
+    padding-left: 40px;
+  }
+  .input-with-icon .input-icon {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--gray-400);
+    pointer-events: none;
+  }
+
+  .forgot-link {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: var(--green);
+    cursor: pointer;
+    margin-top: -10px;
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .forgot-link:hover { text-decoration: underline; }
+
+  .btn-auth {
+    width: 100%;
+    padding: 13px;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-auth:hover { background: var(--green-mid); }
+  .btn-auth:active { transform: scale(0.99); }
+
+  .auth-footer-note {
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: var(--gray-100);
+    border-radius: 9px;
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    border: 1px solid var(--gray-200);
+  }
+
+  .portal-switch {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .portal-switch a {
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .portal-switch a:hover { text-decoration: underline; }
+
+  /* ===== FORGOT PASSWORD PANEL ===== */
+  .forgot-panel {
+    display: none;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--gray-400);
+    cursor: pointer;
+    margin-bottom: 28px;
+    background: none; border: none;
+    padding: 0; font-family: 'DM Sans', sans-serif;
+  }
+  .back-btn:hover { color: var(--green); }
+
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .success-icon {
+    width: 56px; height: 56px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 16px;
+  }
+  .success-state h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 17px; font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+  }
+  .success-state p {
+    font-size: 13px; color: var(--gray-400);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .auth-panel-left { display: none; }
+    .auth-panel-right { padding: 40px 24px; align-items: flex-start; padding-top: 60px; }
+    .auth-form-wrap { max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WIREFRAME NAV -->
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="auth-page">
+
+  <!-- Left Branding Panel -->
+  <div class="auth-panel-left">
+    <div class="panel-logo">
+      <div class="logo-box">🕌</div>
+      <div class="app-title">SINARA</div>
+      <div class="app-sub">Sistem Informasi Manajemen<br>Bantuan & Aset Rumah Ibadah</div>
+    </div>
+    <div class="panel-tagline">
+      <h2>Kelola bantuan<br>rumah ibadah<br>dengan mudah.</h2>
+      <p>Platform terpadu untuk pencatatan, verifikasi, dan pengelolaan anggaran bantuan rumah ibadah di wilayah Anda.</p>
+    </div>
+    <div class="panel-footer">
+      © 2025 Pemerintah Kota Depok · SINARA v1.0
+    </div>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="auth-panel-right">
+    <div class="auth-form-wrap">
+
+      <!-- LOGIN PANEL -->
+      <div id="login-panel">
+        <div class="role-badge">
+          <span class="dot dot-green"></span>
+          Portal Pemkot Depok / Petugas
+        </div>
+        <div class="form-title">Selamat datang</div>
+        <div class="form-subtitle">Masuk menggunakan akun yang telah disiapkan admin.</div>
+
+        <div class="form-group">
+          <label>Username / NIP</label>
+          <div class="input-with-icon">
+            <span class="input-icon">👤</span>
+            <input class="form-control" type="text" placeholder="Masukkan username atau NIP">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-with-icon">
+            <span class="input-icon">🔒</span>
+            <input class="form-control" type="password" placeholder="••••••••">
+          </div>
+        </div>
+
+        <span class="forgot-link" onclick="showForgot()">Lupa password?</span>
+
+        <button class="btn-auth" onclick="window.location='../dashboard.html'">
+          Masuk ke Dashboard
+        </button>
+
+        <div class="auth-footer-note">
+          ℹ️ Akun dibuat oleh admin internal. Jika belum memiliki akses, hubungi <strong>Kesbangpol</strong> atau administrator sistem.
+        </div>
+
+        <div class="portal-switch">
+          Pengurus rumah ibadah? <a href="../pengurus/login.html">Masuk di sini →</a>
+        </div>
+      </div>
+
+      <!-- FORGOT PASSWORD PANEL -->
+      <div id="forgot-panel" class="forgot-panel">
+        <button class="back-btn" onclick="showLogin()">← Kembali ke login</button>
+
+        <!-- Step 1: Input email/username -->
+        <div id="forgot-step1">
+          <div class="form-title">Lupa password?</div>
+          <div class="form-subtitle" style="margin-bottom:28px;">
+            Masukkan username atau NIP Anda. Tim admin akan membantu proses reset.
+          </div>
+
+          <div class="form-group">
+            <label>Username / NIP</label>
+            <div class="input-with-icon">
+              <span class="input-icon">👤</span>
+              <input class="form-control" type="text" placeholder="Username atau NIP Anda">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email yang terdaftar</label>
+            <div class="input-with-icon">
+              <span class="input-icon">✉️</span>
+              <input class="form-control" type="email" placeholder="email@instansi.go.id">
+            </div>
+          </div>
+
+          <button class="btn-auth" onclick="showForgotSuccess()">
+            Kirim Permintaan Reset
+          </button>
+        </div>
+
+        <!-- Step 2: Success -->
+        <div id="forgot-success" class="success-state">
+          <div class="success-icon">✅</div>
+          <h3>Permintaan terkirim</h3>
+          <p>Permintaan reset password telah dikirim. Admin akan memproses dan menghubungi Anda melalui email instansi dalam 1×24 jam.</p>
+          <button class="btn-auth" onclick="showLogin()">Kembali ke Login</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+function showForgot() {
+  document.getElementById('login-panel').style.display = 'none';
+  document.getElementById('forgot-panel').style.display = 'block';
+}
+function showLogin() {
+  document.getElementById('login-panel').style.display = 'block';
+  document.getElementById('forgot-panel').style.display = 'none';
+  // reset forgot state
+  document.getElementById('forgot-step1').style.display = 'block';
+  document.getElementById('forgot-success').style.display = 'none';
+}
+function showForgotSuccess() {
+  document.getElementById('forgot-step1').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

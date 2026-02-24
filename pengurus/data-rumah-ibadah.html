@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SINARA – Data Rumah Ibadah</title>
+<link rel="stylesheet" href="../assets/css/pengurus.css">
+<style>
+  .pg-page { background: var(--gray-100); min-height: 100vh; }
+  .pg-topbar { background: var(--green); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+  .pg-brand { display: flex; align-items: center; gap: 10px; }
+  .pg-brand .brand-icon { width: 34px; height: 34px; background: rgba(255,255,255,0.18); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .pg-brand .brand-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 800; }
+  .pg-brand .brand-sub { font-size: 10px; opacity: 0.75; display: block; font-weight: 400; margin-top: -2px; }
+  .topbar-back { display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 7px 14px; font-size: 14px; font-weight: 600; transition: background 0.15s; }
+  .topbar-back:hover { background: rgba(255,255,255,0.2); }
+  .pg-body { max-width: 640px; margin: 0 auto; padding: 28px 20px 60px; }
+  .page-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 4px; }
+  .page-subtitle { font-size: 15px; color: var(--gray-400); margin-bottom: 28px; line-height: 1.5; }
+
+  /* FORM CARD */
+  .form-card { background: white; border-radius: 16px; border: 1px solid var(--gray-200); padding: 24px; margin-bottom: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .form-card-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: var(--gray-800); margin-bottom: 22px; display: flex; align-items: center; gap: 10px; }
+  .form-card-title .card-icon { font-size: 22px; }
+
+  /* FORM FIELDS — lebih besar untuk kemudahan */
+  .form-row { margin-bottom: 22px; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-label { display: block; font-size: 16px; font-weight: 700; color: var(--gray-800); margin-bottom: 10px; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .form-label .req { color: var(--red); margin-left: 3px; }
+  .form-label .lbl-opt { font-size: 13px; color: var(--gray-400); font-weight: 400; margin-left: 6px; }
+  .form-input { width: 100%; padding: 15px 18px; border: 2px solid var(--gray-200); border-radius: 12px; font-size: 16px; font-family: 'DM Sans', sans-serif; color: var(--gray-800); background: white; transition: all 0.15s; outline: none; box-sizing: border-box; }
+  .form-input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,107,74,0.08); }
+  .form-input::placeholder { color: var(--gray-400); }
+  select.form-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='14' height='9' viewBox='0 0 14 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L7 8L13 1' stroke='%2398a2b3' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 18px center; padding-right: 44px; }
+  .form-hint { font-size: 14px; color: var(--gray-400); margin-top: 8px; line-height: 1.5; }
+
+  /* KONDISI PILIHAN — tombol besar visual */
+  .kondisi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kondisi-btn { border: 2px solid var(--gray-200); border-radius: 12px; padding: 16px 12px; text-align: center; cursor: pointer; transition: all 0.15s; background: white; }
+  .kondisi-btn:hover { border-color: var(--green-mid); }
+  .kondisi-btn.selected { border-color: var(--green); background: var(--green-light); }
+  .kondisi-btn .kb-icon { font-size: 28px; margin-bottom: 6px; }
+  .kondisi-btn .kb-label { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: var(--gray-800); }
+  .kondisi-btn .kb-desc { font-size: 12px; color: var(--gray-400); margin-top: 3px; line-height: 1.3; }
+  .kondisi-btn.selected .kb-label { color: var(--green); }
+
+  /* MAPS HINT */
+  .maps-hint { background: var(--blue-soft); border: 1px solid #c3d9ff; border-radius: 10px; padding: 14px 16px; margin-top: 10px; font-size: 14px; color: #2d5fa8; line-height: 1.6; }
+  .maps-hint strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+  /* FOTO UPLOAD */
+  .foto-upload-area { border: 2.5px dashed var(--gray-200); border-radius: 14px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--gray-50); }
+  .foto-upload-area:hover { border-color: var(--green-mid); background: var(--green-light); }
+  .foto-upload-area .fu-icon { font-size: 42px; margin-bottom: 12px; }
+  .foto-upload-area .fu-text { font-size: 16px; font-weight: 700; color: var(--gray-700); font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 6px; }
+  .foto-upload-area .fu-hint { font-size: 14px; color: var(--gray-400); }
+  .foto-upload-area input[type="file"] { display: none; }
+  .foto-previews { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .foto-preview-item { width: 100px; height: 100px; border-radius: 12px; border: 2px solid var(--gray-200); background: var(--gray-100); overflow: hidden; position: relative; flex-shrink: 0; }
+  .foto-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+  .foto-preview-remove { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.55); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+  /* ACTIONS */
+  .form-actions { margin-top: 28px; }
+  .btn-primary { width: 100%; background: var(--green); color: white; border: none; border-radius: 12px; padding: 16px 28px; font-size: 17px; font-weight: 700; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background 0.15s; margin-bottom: 12px; display: block; box-sizing: border-box; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { width: 100%; background: white; color: var(--gray-600); border: 2px solid var(--gray-200); border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.15s; text-decoration: none; display: block; text-align: center; box-sizing: border-box; }
+  .btn-secondary:hover { border-color: var(--gray-400); color: var(--gray-800); }
+
+  /* SUCCESS */
+  .success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+  .success-overlay.show { display: flex; }
+  .success-modal { background: white; border-radius: 20px; padding: 40px 32px; max-width: 400px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+  .success-icon { font-size: 60px; margin-bottom: 16px; }
+  .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 800; color: var(--gray-800); margin-bottom: 10px; }
+  .success-desc { font-size: 15px; color: var(--gray-400); line-height: 1.6; margin-bottom: 16px; }
+  .success-status { background: var(--accent-soft); border: 1px solid #f0c050; border-radius: 10px; padding: 14px 16px; font-size: 15px; color: #a16207; font-weight: 600; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+
+<div class="page-switcher">
+  <span>📐 WIREFRAME</span>
+</div>
+
+<div style="padding-top:48px;">
+<div class="pg-page">
+
+  <div class="pg-topbar">
+    <div class="pg-brand">
+      <div class="brand-icon">🕌</div>
+      <div>
+        <div class="brand-text">SINARA</div>
+        <span class="brand-sub">Portal Pengurus Rumah Ibadah</span>
+      </div>
+    </div>
+    <a class="topbar-back" href="dashboard-pengurus.html">← Kembali</a>
+  </div>
+
+  <div class="pg-body">
+
+    <div class="page-title">Data Rumah Ibadah</div>
+    <p class="page-subtitle">Isi data di bawah ini dengan lengkap dan benar. Kolom bertanda <span style="color:var(--red); font-weight:700;">*</span> wajib diisi.</p>
+
+    <!-- CARD 1: Identitas -->
+    <div class="form-card">
+      <div class="form-card-title">Identitas Rumah Ibadah</div>
+
+      <div class="form-row">
+        <label class="form-label">Nama Rumah Ibadah <span class="req">*</span></label>
+        <input type="text" class="form-input" placeholder="Contoh: Masjid Al-Ikhlas">
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Jenis Rumah Ibadah <span class="req">*</span></label>
+        <select class="form-input">
+          <option value="">-- Pilih Jenis --</option>
+          <option>Masjid</option>
+          <option>Mushola</option>
+          <option>Gereja</option>
+          <option>Pura</option>
+          <option>Klenteng</option>
+          <option>Vihara</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Tahun Berdiri<span class="lbl-opt">(opsional)</span></label>
+        <input type="text" class="form-input" placeholder="Contoh: 1985" maxlength="4" inputmode="numeric">
+      </div>
+
+      <div class="form-row" style="margin-bottom:0;">
+        <label class="form-label">Kondisi Bangunan <span class="req">*</span></label>
+        <select class="form-input">
+          <option value="">-- Pilih Jenis --</option>
+          <option>Tidak Ada Kerusakan</option>
+          <option>Ada Kerusakan Sebagian</option>
+          <option>Kerusakan Parah</option>
+          <option>Bangunan Belum Ada</option>
+        </div>
+        <input type="hidden" id="kondisi-value">
+      </div>
+    </div>
+
+    <!-- CARD 2: Lokasi -->
+    <div class="form-card">
+      <div class="form-card-title"> Lokasi</div>
+
+      <div class="form-row">
+        <label class="form-label">Alamat Jalan <span class="req">*</span></label>
+        <input type="text" class="form-input" placeholder="Contoh: Jl. Margonda Raya No. 54">
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Kecamatan <span class="req">*</span></label>
+        <select class="form-input" onchange="updateKelurahan(this.value)">
+          <option value="">-- Pilih Kecamatan --</option>
+          <option value="beji">Beji</option>
+          <option value="bojongsari">Bojongsari</option>
+          <option value="cilodong">Cilodong</option>
+          <option value="cimanggis">Cimanggis</option>
+          <option value="cinere">Cinere</option>
+          <option value="cipayung">Cipayung</option>
+          <option value="limo">Limo</option>
+          <option value="pancoran-mas">Pancoran Mas</option>
+          <option value="sawangan">Sawangan</option>
+          <option value="sukmajaya">Sukmajaya</option>
+          <option value="tapos">Tapos</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Kelurahan <span class="req">*</span></label>
+        <select class="form-input" id="kelurahan-select">
+          <option value="">-- Pilih Kecamatan dulu --</option>
+        </select>
+      </div>
+
+      <div class="form-row" style="margin-bottom:0;">
+        <label class="form-label">Link Google Maps <span class="lbl-opt">(opsional)</span></label>
+        <input type="url" class="form-input" placeholder="Tempel link Google Maps di sini...">
+        <div class="maps-hint">
+          <strong>Cara mendapatkan link:</strong>
+          Buka Google Maps → Cari nama rumah ibadah → Ketuk tombol <b>Bagikan</b> → Salin link → Tempel di kolom atas.
+        </div>
+      </div>
+    </div>
+
+    <!-- CARD 3: Ketua Pengurus -->
+    <div class="form-card">
+      <div class="form-card-title">Ketua Pengurus</div>
+
+      <div class="form-row">
+        <label class="form-label">Nama Ketua Pengurus <span class="req">*</span></label>
+        <input type="text" class="form-input" placeholder="Nama lengkap ketua pengurus">
+      </div>
+
+      <div class="form-row" style="margin-bottom:0;">
+        <label class="form-label">No. Telepon / WhatsApp <span class="req">*</span></label>
+        <input type="tel" class="form-input" placeholder="Contoh: 08123456789" inputmode="numeric">
+        <div class="form-hint">Nomor ini digunakan untuk dihubungi oleh petugas Pemkot Depok.</div>
+      </div>
+    </div>
+
+    <!-- CARD 4: Foto Bangunan -->
+    <div class="form-card">
+      <div class="form-card-title">Foto Bangunan</div>
+      <p style="font-size:15px; color:var(--gray-400); margin-bottom:18px; line-height:1.6;">Unggah 1 sampai 3 foto bangunan. Pastikan foto jelas dan terang.</p>
+
+      <div class="foto-upload-area" onclick="document.getElementById('foto-input').click()">
+        <div class="fu-icon">📸</div>
+        <div class="fu-text">Ketuk di sini untuk unggah foto</div>
+        <div class="fu-hint">JPG atau PNG · Maksimal 5 MB per foto · Maks. 3 foto</div>
+        <input type="file" id="foto-input" accept="image/*" multiple onchange="handleFotoUpload(event)">
+      </div>
+      <div class="foto-previews" id="foto-previews"></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-primary" onclick="submitForm()">✓ Kirim Data</button>
+      <a class="btn-secondary" href="dashboard-pengurus.html">Batal</a>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-modal">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Data Berhasil Dikirim!</div>
+    <div class="success-desc">Data rumah ibadah Anda sudah kami terima. Petugas Pemda akan memverifikasi dalam 3–5 hari kerja.</div>
+    <div class="success-status">⏳ Status: Menunggu Verifikasi Pemkot Depok</div>
+    <button class="btn-primary" style="margin-bottom:0;" onclick="window.location.href='dashboard-pengurus.html'">Kembali ke Beranda</button>
+  </div>
+</div>
+
+<script>
+const kelurahanData = {
+  'beji': ['Beji','Beji Timur','Kemiri Muka','Kukusan','Pondok Cina','Tanah Baru'],
+  'bojongsari': ['Bojongsari','Bojongsari Baru','Curug','Duren Mekar','Duren Seribu','Pondok Jaya','Serua'],
+  'cilodong': ['Cilodong','Kalibaru','Kalimulya','Jatimulya','Sukamaju'],
+  'cimanggis': ['Cisalak','Cisalak Pasar','Curug','Harjamukti','Mekarsari','Narogong','Pabuaran','Pasir Gunung Selatan','Tugu'],
+  'cinere': ['Cinere','Gandul','Pangkalan Jati','Pangkalan Jati Baru'],
+  'cipayung': ['Bojong Pondok Terong','Cipayung','Cipayung Jaya','Pondok Jaya','Ratujaya'],
+  'limo': ['Grogol','Krukut','Limo','Meruyung'],
+  'pancoran-mas': ['Depok','Depok Jaya','Mampang','Pancoran Mas','Rangkapan Jaya','Rangkapan Jaya Baru'],
+  'sawangan': ['Bedahan','Cinangka','Kedaung','Pasir Putih','Pengasinan','Sawangan','Sawangan Baru'],
+  'sukmajaya': ['Abadijaya','Baktijaya','Cisalak','Mekarjaya','Sukmajaya','Tirtajaya'],
+  'tapos': ['Cimpaeun','Cilangkap','Jatijajar','Leuwinanggung','Sukamaju Baru','Sukatani','Tapos']
+};
+
+function updateKelurahan(kec) {
+  const sel = document.getElementById('kelurahan-select');
+  sel.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
+  if (kelurahanData[kec]) {
+    kelurahanData[kec].forEach(k => { sel.innerHTML += `<option>${k}</option>`; });
+  }
+}
+
+function pilihKondisi(el, val) {
+  document.querySelectorAll('.kondisi-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('kondisi-value').value = val;
+}
+
+function handleFotoUpload(event) {
+  const files = Array.from(event.target.files);
+  const previews = document.getElementById('foto-previews');
+  const existing = previews.querySelectorAll('.foto-preview-item').length;
+  const allowed = Math.min(files.length, 3 - existing);
+  for (let i = 0; i < allowed; i++) {
+    const file = files[i];
+    if (file.size > 5 * 1024 * 1024) { alert('Ukuran foto maksimal 5 MB.'); continue; }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const item = document.createElement('div');
+      item.className = 'foto-preview-item';
+      item.innerHTML = `<img src="${e.target.result}" alt="Foto"><button class="foto-preview-remove" onclick="this.parentElement.remove()">✕</button>`;
+      previews.appendChild(item);
+    };
+    reader.readAsDataURL(file);
+  }
+  event.target.value = '';
+}
+
+function submitForm() {
+  document.getElementById('success-overlay').classList.add('show');
+}
+</script>
+</body>
+</html>
